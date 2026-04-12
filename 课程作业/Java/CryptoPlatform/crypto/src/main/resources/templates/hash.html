@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>哈希与密码算法</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="nav :: navbar"></div>
+
+<div class="wrapper">
+    <div class="sidebar">
+        <h3>算法选择</h3>
+        <ul>
+            <li class="alg-item active" data-target="sha1">SHA-1</li>
+            <li class="alg-item" data-target="sha256">SHA-256</li>
+            <li class="alg-item" data-target="sha3">SHA-3</li>
+            <li class="alg-item" data-target="ripemd160">RIPEMD-160</li>
+            <li class="alg-item" data-target="hmacsha1">HMAC-SHA1</li>
+            <li class="alg-item" data-target="hmacsha256">HMAC-SHA256</li>
+            <li class="alg-item" data-target="pbkdf2">PBKDF2</li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="container">
+
+            <div id="sha1" class="form-section active">
+                <h2>SHA-1 哈希</h2>
+                <form class="hashForm" data-algorithm="sha1">
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">生成哈希</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <div id="sha256" class="form-section">
+                <h2>SHA-256 哈希</h2>
+                <form class="hashForm" data-algorithm="sha256">
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">生成哈希</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <div id="sha3" class="form-section">
+                <h2>SHA-3 哈希</h2>
+                <form class="hashForm" data-algorithm="sha3">
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">生成哈希</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <div id="ripemd160" class="form-section">
+                <h2>RIPEMD-160 哈希</h2>
+                <form class="hashForm" data-algorithm="ripemd160">
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">生成哈希</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <div id="hmacsha1" class="form-section">
+                <h2>HMAC-SHA1 签名</h2>
+                <form class="hashForm" data-algorithm="hmacsha1">
+                    <label>密钥：</label>
+                    <input type="text" name="key" required>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">生成签名</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <div id="hmacsha256" class="form-section">
+                <h2>HMAC-SHA256 签名</h2>
+                <form class="hashForm" data-algorithm="hmacsha256">
+                    <label>密钥：</label>
+                    <input type="text" name="key" required>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">生成签名</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <div id="pbkdf2" class="form-section">
+                <h2>PBKDF2 密钥派生</h2>
+                <form class="hashForm" data-algorithm="pbkdf2">
+                    <label>盐值（Salt）：</label>
+                    <input type="text" name="salt" required>
+                    <label>输入密码：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">生成密钥</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // 算法切换
+    const items = document.querySelectorAll('.alg-item');
+    const sections = document.querySelectorAll('.form-section');
+
+    items.forEach(item => {
+        item.addEventListener('click', () => {
+            items.forEach(i => i.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            item.classList.add('active');
+            document.getElementById(item.getAttribute('data-target')).classList.add('active');
+        });
+    });
+
+    // 提交事件绑定
+    document.querySelectorAll('.hashForm').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const algorithm = form.getAttribute("data-algorithm");
+            const input = form.input.value;
+            const key = form.key ? form.key.value : "";
+            const salt = form.salt ? form.salt.value : "";
+
+            const params = new URLSearchParams({ algorithm, input });
+            if (key) params.append("key", key);
+            if (salt) params.append("salt", salt);
+
+            fetch("/api/hash/digest", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString()
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const resultBox = form.nextElementSibling;
+                    if (data.status === 0) {
+                        resultBox.textContent = data.result;
+                        resultBox.style.color = "#2c3e50";
+                    } else {
+                        resultBox.textContent = "错误：" + data.error;
+                        resultBox.style.color = "#e74c3c";
+                    }
+                })
+                .catch(error => {
+                    const resultBox = form.nextElementSibling;
+                    resultBox.textContent = "请求失败：" + error;
+                    resultBox.style.color = "#e67e22";
+                });
+        });
+    });
+</script>
+</body>
+</html>

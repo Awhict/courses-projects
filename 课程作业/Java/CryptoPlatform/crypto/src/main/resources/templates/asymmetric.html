@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>非对称加密算法</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="nav :: navbar"></div>
+
+<div class="wrapper">
+    <!-- 左侧算法导航 -->
+    <div class="sidebar">
+        <h3>算法选择</h3>
+        <ul>
+            <li class="alg-item active" data-target="rsa">RSA</li>
+            <li class="alg-item" data-target="sm2">SM2 (ECC)</li>
+            <li class="alg-item" data-target="rsa-sign">RSA-SHA1</li>
+            <li class="alg-item" data-target="ecdsa">ECDSA</li>
+        </ul>
+    </div>
+
+    <!-- 右侧表单内容 -->
+    <div class="content">
+        <div class="container">
+
+            <!-- RSA 加解密 -->
+            <div id="rsa" class="form-section active">
+                <h2>RSA 加密 / 解密</h2>
+                <form class="cryptoForm" data-api="/api/asymmetric/rsa">
+                    <button class="gen-key-btn" data-api="/api/asymmetric/rsa/genkey">生成密钥对</button>
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="encrypt">加密</option>
+                        <option value="decrypt">解密</option>
+                    </select>
+                    <label>密钥（Base64编码）：</label>
+                    <textarea name="key" rows="2" required></textarea>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <!-- RSA-SHA1 签名 / 验签 -->
+            <div id="rsa-sign" class="form-section">
+                <h2>RSA-SHA1 签名 / 验签</h2>
+                <form class="cryptoForm" data-api="/api/asymmetric/rsa">
+                    <button class="gen-key-btn" data-api="/api/asymmetric/rsa/genkey">生成密钥对</button>
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="sign">签名</option>
+                        <option value="verify">验签</option>
+                    </select>
+                    <label>密钥（Base64编码）：</label>
+                    <textarea name="key" rows="2" required></textarea>
+                    <label>消息内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <label>签名（验签时填写）：</label>
+                    <textarea name="signature" rows="2"></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <!-- SM2 ECC 加解密 -->
+            <div id="sm2" class="form-section">
+                <h2>SM2 (ECC) 加密 / 解密</h2>
+                <form class="cryptoForm" data-api="/api/asymmetric/sm2">
+                    <button class="gen-key-btn" data-api="/api/asymmetric/sm2/genkey">生成密钥对</button>
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="encrypt">加密</option>
+                        <option value="decrypt">解密</option>
+                    </select>
+                    <label>密钥（Base64编码）：</label>
+                    <textarea name="key" rows="2" required></textarea>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <!-- ECDSA -->
+            <div id="ecdsa" class="form-section">
+                <h2>ECDSA 签名 / 验签</h2>
+                <form class="cryptoForm" data-api="/api/asymmetric/ecdsa">
+                    <button class="gen-key-btn" data-api="/api/asymmetric/ecdsa/genkey">生成密钥对</button>
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="sign">签名</option>
+                        <option value="verify">验签</option>
+                    </select>
+                    <label>密钥（Base64编码）：</label>
+                    <textarea name="key" rows="2" required></textarea>
+                    <label>消息内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <label>签名（验签时填写）：</label>
+                    <textarea name="signature" rows="2"></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <!-- 密钥对弹出窗口 -->
+            <div id="keypairModal" class="keypair-modal">
+                <span class="modal-close" onclick="document.getElementById('keypairModal').style.display='none'">关闭 ×</span>
+                <h3>生成的密钥对</h3>
+                <strong>公钥：</strong>
+                <pre id="publicKeyArea"></pre>
+                <strong>私钥：</strong>
+                <pre id="privateKeyArea"></pre>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // 算法选项切换
+    const items = document.querySelectorAll('.alg-item');
+    const sections = document.querySelectorAll('.form-section');
+
+    items.forEach(item => {
+        item.addEventListener('click', () => {
+            items.forEach(i => i.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+
+            item.classList.add('active');
+            document.getElementById(item.getAttribute('data-target')).classList.add('active');
+        });
+    });
+
+    // 表单提交逻辑
+    document.querySelectorAll('.cryptoForm').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const apiBase = form.getAttribute("data-api");
+            const operation = form.operation.value;
+            const url = `${apiBase}/${operation}`;
+
+            const key = form.key.value;
+            const input = form.input.value;
+            const signature = form.signature ? form.signature.value : "";
+
+            const params = new URLSearchParams({ key, input });
+            if (operation === "verify") {
+                params.append("signature", signature);
+            }
+
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString()
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const resultBox = form.nextElementSibling;
+                    if (data.status === "0") {
+                        resultBox.textContent = data.result || data.valid || "操作成功";
+                        resultBox.style.color = "#2c3e50";
+                    } else {
+                        resultBox.textContent = "错误：" + JSON.stringify(data);
+                        resultBox.style.color = "#e74c3c";
+                    }
+                })
+                .catch(error => {
+                    const resultBox = form.nextElementSibling;
+                    resultBox.textContent = "请求失败：" + error;
+                    resultBox.style.color = "#e67e22";
+                });
+        });
+
+        // 动态更新密钥提示
+        const opSelect = form.querySelector("select[name='operation']");
+        const keyField = form.querySelector("textarea[name='key']");
+        if (opSelect && keyField) {
+            opSelect.addEventListener("change", () => {
+                const val = opSelect.value;
+                if (val === "encrypt") keyField.placeholder = "请填写公钥（Base64编码）";
+                else if (val === "decrypt") keyField.placeholder = "请填写私钥（Base64编码）";
+                else if (val === "sign") keyField.placeholder = "请填写私钥（Base64编码）";
+                else if (val === "verify") keyField.placeholder = "请填写公钥（Base64编码）";
+            });
+        }
+    });
+
+    // 生成密钥对按钮逻辑
+    document.querySelectorAll(".gen-key-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            const api = button.getAttribute("data-api");
+
+            fetch(api)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "0") {
+                        document.getElementById("publicKeyArea").textContent = data.publicKey || "无";
+                        document.getElementById("privateKeyArea").textContent = data.privateKey || "无";
+                        document.getElementById("keypairModal").style.display = "block";
+                    } else {
+                        alert("密钥生成失败：" + JSON.stringify(data));
+                    }
+                })
+                .catch(err => {
+                    alert("请求错误：" + err);
+                });
+        });
+    });
+</script>
+</body>
+</html>

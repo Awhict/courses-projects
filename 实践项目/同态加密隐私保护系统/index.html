@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>同态加密隐私保护系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#0FC6C2',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                        light: '#FFFFFF'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+            }
+            .btn-hover {
+                @apply transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1;
+            }
+            .input-focus {
+                @apply focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .sidebar-item {
+                @apply py-3 px-4 rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary/10;
+            }
+            .sidebar-item.active {
+                @apply bg-primary/10 text-primary font-medium;
+            }
+            .tab-content {
+                @apply hidden;
+            }
+            .tab-content.active {
+                @apply block;
+            }
+            .form-group {
+                @apply mb-6 p-4 bg-white rounded-xl shadow-sm border border-gray-100;
+            }
+            .result-box {
+                @apply mt-2 p-3 bg-gray-50 rounded-lg min-h-12 border border-gray-200;
+            }
+            .dual-input {
+                @apply flex flex-col md:flex-row gap-4 mb-4;
+            }
+            .dual-input > div {
+                @apply flex-1;
+            }
+            .loading {
+                @apply h-12 flex items-center justify-center text-gray-400;
+            }
+            .loading::after {
+                content: '加载中...';
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-neutral min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-md fixed w-full z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fa-solid fa-shield-halved text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-dark">同态加密隐私保护系统</span>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#home" class="border-primary text-dark inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fa-solid fa-home mr-1"></i> 首页
+                        </a>
+                        <a href="#features" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fa-solid fa-feather mr-1"></i> 功能
+                        </a>
+                        <a href="#demo" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fa-solid fa-play-circle mr-1"></i> 演示
+                        </a>
+                        <a href="#about" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fa-solid fa-info-circle mr-1"></i> 关于
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover hidden md:block">
+                        <i class="fa-solid fa-rocket mr-1"></i> 开始使用
+                    </button>
+                    <button type="button" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none" id="mobile-menu-button">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="bg-primary/10 text-primary block pl-3 pr-4 py-2 rounded-md text-base font-medium">首页</a>
+                <a href="#features" class="text-gray-700 hover:bg-gray-50 hover:text-primary block pl-3 pr-4 py-2 rounded-md text-base font-medium">功能</a>
+                <a href="#demo" class="text-gray-700 hover:bg-gray-50 hover:text-primary block pl-3 pr-4 py-2 rounded-md text-base font-medium">演示</a>
+                <a href="#about" class="text-gray-700 hover:bg-gray-50 hover:text-primary block pl-3 pr-4 py-2 rounded-md text-base font-medium">关于</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 介绍区域 -->
+    <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 md:pr-12">
+                    <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-dark leading-tight mb-6">
+                        保护您的<span class="text-primary">隐私数据</span>，<br>
+                        同时享受<span class="text-secondary">数据价值</span>
+                    </h1>
+                    <p class="text-gray-600 text-lg mb-8">
+                        使用同态加密技术，您可以在不泄露原始数据的情况下进行复杂计算，
+                        如比较大小，保护敏感信息的同时实现数据价值。
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg shadow-lg btn-hover">
+                            <i class="fa-solid fa-shield-check mr-2"></i> 开始演示
+                        </button>
+                        <button class="bg-white hover:bg-gray-50 text-dark border border-gray-300 px-6 py-3 rounded-lg shadow btn-hover">
+                            <i class="fa-solid fa-book-open mr-2"></i> 了解更多
+                        </button>
+                    </div>
+                </div>
+                <div class="md:w-1/2 mt-12 md:mt-0">
+                    <div class="relative">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-30"></div>
+                        <div class="relative bg-white rounded-2xl overflow-hidden shadow-2xl">
+                            <img src="https://picsum.photos/seed/homomorphic/600/400" alt="隐私保护示意图" class="w-full h-auto">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-xl font-bold mb-2">同态加密技术</h3>
+                                    <p class="text-gray-200">在不泄露原始数据的情况下进行计算</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能介绍 -->
+    <section id="features" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">强大的隐私保护功能</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    我们的同态加密系统提供多种隐私保护计算功能，让您的数据安全无忧
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 功能卡片1 -->
+                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 card-shadow border border-gray-100">
+                    <div class="w-14 h-14 bg-secondary/10 rounded-lg flex items-center justify-center mb-5">
+                        <i class="fa-solid fa-sort-numeric-up text-secondary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">隐私比较</h3>
+                    <p class="text-gray-600 mb-4">
+                        在不泄露具体数值的情况下比较两个或多个隐私数据的大小关系，
+                        适用于薪资比较、成绩排名等场景。
+                    </p>
+                    <a href="#demo" class="text-primary font-medium flex items-center">
+                        了解更多 <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+                <!-- 功能卡片2 -->
+                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 card-shadow border border-gray-100">
+                    <div class="w-14 h-14 bg-secondary/10 rounded-lg flex items-center justify-center mb-5">
+                        <i class="fa-solid fa-bolt text-secondary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">高性能计算</h3>
+                    <p class="text-gray-600 mb-4">
+                        优化的同态加密实现，支持高效的计算操作，在保证数据安全的同时，
+                        提供可接受的计算性能。
+                    </p>
+                    <a href="#demo" class="text-primary font-medium flex items-center">
+                        了解更多 <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+                <!-- 功能卡片3 -->
+                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 card-shadow border border-gray-100">
+                    <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-5">
+                        <i class="fa-solid fa-lock text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">多算法支持</h3>
+                    <p class="text-gray-600 mb-4">
+                        支持多种同态加密算法，包括 TFHE、BFV、BGV、CKKS 和 FHEW，
+                        满足不同场景的安全需求。
+                    </p>
+                    <a href="#demo" class="text-primary font-medium flex items-center">
+                        了解更多 <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 演示区域 -->
+    <section id="demo" class="py-16 bg-neutral">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">在线演示</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    通过下面的演示，体验同态加密技术如何在不泄露隐私数据的情况下进行计算
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="container">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="sidebar w-full md:w-64 bg-gray-50 p-4 border-r border-gray-200">
+                            <div class="sidebar-item active" data-tab="bgv">
+                                <i class="fa-solid fa-shield-alt mr-2"></i> BGV同态加密
+                            </div>
+                            <div class="sidebar-item" data-tab="bfv">
+                                <i class="fa-solid fa-lock mr-2"></i> BFV同态加密
+                            </div>
+                            <div class="sidebar-item" data-tab="fhew">
+                                <i class="fa-solid fa-key mr-2"></i> FHEW同态加密
+                            </div>
+                            <div class="sidebar-item" data-tab="ckks">
+                                <i class="fa-solid fa-calculator mr-2"></i> CKKS同态加密
+                            </div>
+                            <div class="sidebar-item" data-tab="tfhe">
+                                <i class="fa-solid fa-shield-virus mr-2"></i> TFHE同态加密
+                            </div>
+                        </div>
+
+                        <div class="main-content flex-1 p-6">
+                            <h1 class="text-2xl font-bold text-dark mb-6">密码算法工具</h1>
+
+                            <div id="bgv" class="tab-content active">
+                                <h2 class="text-xl font-bold text-dark mb-4 flex items-center">
+                                    <i class="fa-solid fa-shield-alt text-primary mr-2"></i> BGV同态加密
+                                </h2>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">添加员工</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="name_bgv" class="block text-gray-700 mb-1">员工姓名</label>
+                                            <input type="text" id="name_bgv" placeholder="输入员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                        <div>
+                                            <label for="salary_bgv" class="block text-gray-700 mb-1">工资</label>
+                                            <input type="text" id="salary_bgv" placeholder="输入工资" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button onclick="addEmployeeBGV()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-plus mr-2"></i> 添加员工
+                                    </button>
+                                    <div id="add_result_bgv" class="result-box"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">比较工资</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="name1_bgv" class="block text-gray-700 mb-1">员工1姓名</label>
+                                            <input type="text" id="name1_bgv" placeholder="输入第一个员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                        <div>
+                                            <label for="name2_bgv" class="block text-gray-700 mb-1">员工2姓名</label>
+                                            <input type="text" id="name2_bgv" placeholder="输入第二个员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button onclick="compareSalariesBGV()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-balance-scale mr-2"></i> 比较工资
+                                    </button>
+                                    <div id="comparison_result_bgv" class="result-box"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">解密工资</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="name_decrypt_bgv" class="block text-gray-700 mb-1">员工姓名</label>
+                                            <input type="text" id="name_decrypt_bgv" placeholder="输入要解密的员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button onclick="decryptSalaryBGV()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-unlock mr-2"></i> 解密工资
+                                    </button>
+                                    <div id="decrypted_salary_bgv" class="result-box"></div>
+                                </div>
+                            </div>
+
+                            <div id="bfv" class="tab-content">
+                                <h2 class="text-xl font-bold text-dark mb-4 flex items-center">
+                                    <i class="fa-solid fa-lock text-primary mr-2"></i> BFV同态加密
+                                </h2>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">添加员工</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="name_bfv" class="block text-gray-700 mb-1">员工姓名</label>
+                                            <input type="text" id="name_bfv" placeholder="输入员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                        <div>
+                                            <label for="salary_bfv" class="block text-gray-700 mb-1">工资</label>
+                                            <input type="text" id="salary_bfv" placeholder="输入工资" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button onclick="addEmployeeBFV()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-plus mr-2"></i> 添加员工
+                                    </button>
+                                    <div id="add_result_bfv" class="result-box"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">比较工资</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="name1_bfv" class="block text-gray-700 mb-1">员工1姓名</label>
+                                            <input type="text" id="name1_bfv" placeholder="输入第一个员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                        <div>
+                                            <label for="name2_bfv" class="block text-gray-700 mb-1">员工2姓名</label>
+                                            <input type="text" id="name2_bfv" placeholder="输入第二个员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button onclick="compareSalariesBFV()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-balance-scale mr-2"></i> 比较工资
+                                    </button>
+                                    <div id="comparison_result_bfv" class="result-box"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">解密工资</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="name_decrypt_bfv" class="block text-gray-700 mb-1">员工姓名</label>
+                                            <input type="text" id="name_decrypt_bfv" placeholder="输入要解密的员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button onclick="decryptSalaryBFV()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-unlock mr-2"></i> 解密工资
+                                    </button>
+                                    <div id="decrypted_salary_bfv" class="result-box"></div>
+                                </div>
+                            </div>
+
+                            <div id="fhew" class="tab-content">
+                                <h2 class="text-xl font-bold text-dark mb-4 flex items-center">
+                                    <i class="fa-solid fa-key text-primary mr-2"></i> FHEW同态加密
+                                </h2>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">加密工资数据</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="employee-name" class="block text-gray-700 mb-1">员工姓名</label>
+                                            <input type="text" id="employee-name" placeholder="输入员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                        <div>
+                                            <label for="salary-amount" class="block text-gray-700 mb-1">工资数额</label>
+                                            <input type="text" id="salary-amount" placeholder="输入工资数额" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button id="encrypt-btn" onclick="encryptSalaryFHEW()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-lock mr-2"></i> 加密工资
+                                    </button>
+                                    <div id="encrypt-result" class="result-box"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">加密文件列表</h3>
+                                    <div id="file-list" class="result-content">
+                                        <div class="loading"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">比较加密工资</h3>
+                                    <div class="dual-input">
+                                        <div>
+                                            <label for="file1-select" class="block text-gray-700 mb-1">选择第一个文件</label>
+                                            <select id="file1-select" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                                <option value="">-- 请选择 --</option>
+                                            </select>
+                                            <div id="file1-details" class="result-box mt-2"></div>
+                                        </div>
+                                        <div>
+                                            <label for="file2-select" class="block text-gray-700 mb-1">选择第二个文件</label>
+                                            <select id="file2-select" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                                <option value="">-- 请选择 --</option>
+                                            </select>
+                                            <div id="file2-details" class="result-box mt-2"></div>
+                                        </div>
+                                    </div>
+                                    <button id="compare-btn" onclick="compareSalariesFHEW()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-balance-scale mr-2"></i> 比较工资
+                                    </button>
+                                    <div id="compare-result" class="result-box"></div>
+                                </div>
+                            </div>
+
+                            <div id="ckks" class="tab-content">
+                                <h2 class="text-xl font-bold text-dark mb-4 flex items-center">
+                                    <i class="fa-solid fa-calculator text-primary mr-2"></i> CKKS同态加密
+                                </h2>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">添加员工</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="name_ckks" class="block text-gray-700 mb-1">员工姓名</label>
+                                            <input type="text" id="name_ckks" placeholder="输入员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                        <div>
+                                            <label for="salary_ckks" class="block text-gray-700 mb-1">工资</label>
+                                            <input type="text" id="salary_ckks" placeholder="输入工资" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button onclick="addEmployeeCKKS()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-plus mr-2"></i> 添加员工
+                                    </button>
+                                    <div id="add_result_ckks" class="result-box"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">可用加密文件</h3>
+                                    <div id="ckks_file_list" class="result-content">
+                                        <div class="loading"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">比较工资</h3>
+                                    <div class="dual-input">
+                                        <div>
+                                            <label for="file1_ckks" class="block text-gray-700 mb-1">选择第一个文件</label>
+                                            <select id="file1_ckks" class="ckks-file-select w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                                <option value="">-- 请选择 --</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="file2_ckks" class="block text-gray-700 mb-1">选择第二个文件</label>
+                                            <select id="file2_ckks" class="ckks-file-select w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                                <option value="">-- 请选择 --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button onclick="compareSalariesCKKS()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-balance-scale mr-2"></i> 比较工资
+                                    </button>
+                                    <div id="comparison_result_ckks" class="result-box"></div>
+                                </div>
+                            </div>
+
+                            <div id="tfhe" class="tab-content">
+                                <h2 class="text-xl font-bold text-dark mb-4 flex items-center">
+                                    <i class="fa-solid fa-shield-virus text-primary mr-2"></i> TFHE同态加密
+                                </h2>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">添加员工</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="name_tfhe" class="block text-gray-700 mb-1">员工姓名</label>
+                                            <input type="text" id="name_tfhe" placeholder="输入员工姓名" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                        <div>
+                                            <label for="salary_tfhe" class="block text-gray-700 mb-1">工资</label>
+                                            <input type="text" id="salary_tfhe" placeholder="输入工资" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                        </div>
+                                    </div>
+                                    <button onclick="addEmployeeTFHE()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-plus mr-2"></i> 添加员工
+                                    </button>
+                                    <div id="add_result_tfhe" class="result-box"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">可用员工</h3>
+                                    <div id="tfhe_employee_list" class="result-content">
+                                        <div class="loading"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <h3 class="text-lg font-semibold text-dark mb-3">比较工资</h3>
+                                    <div class="dual-input">
+                                        <div>
+                                            <label for="name1_tfhe" class="block text-gray-700 mb-1">选择第一个员工</label>
+                                            <select id="name1_tfhe" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                                <option value="">-- 请选择 --</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="name2_tfhe" class="block text-gray-700 mb-1">选择第二个员工</label>
+                                            <select id="name2_tfhe" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                                                <option value="">-- 请选择 --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button onclick="compareSalariesTFHE()" class="mt-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg shadow btn-hover">
+                                        <i class="fa-solid fa-balance-scale mr-2"></i> 比较工资
+                                    </button>
+                                    <div id="comparison_result_tfhe" class="result-box"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于区域 -->
+    <section id="about" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">关于同态加密</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    了解更多关于同态加密技术的原理和应用场景
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-bold text-dark mb-4">什么是同态加密？</h3>
+                    <p class="text-gray-600 mb-4">
+                        同态加密是一种先进的加密技术，允许在加密数据上直接进行计算，而无需先解密。
+                        计算结果解密后与对原始数据进行相同计算的结果相同。
+                    </p>
+                    <p class="text-gray-600 mb-4">
+                        常见的同态加密算法包括 BFV、BGV、CKKS、FHEW 和 TFHE，它们各自适用于不同的场景。
+                    </p>
+                    <div class="mt-6">
+                        <div class="flex items-center mb-3">
+                            <div class="w-3 h-3 rounded-full bg-primary mr-2"></div>
+                            <span class="text-gray-700">保护敏感数据：医疗记录、金融数据等</span>
+                        </div>
+                        <div class="flex items-center mb-3">
+                            <div class="w-3 h-3 rounded-full bg-primary mr-2"></div>
+                            <span class="text-gray-700">隐私计算：在不泄露数据的情况下进行数据分析</span>
+                        </div>
+                        <div class="flex items-center mb-3">
+                            <div class="w-3 h-3 rounded-full bg-primary mr-2"></div>
+                            <span class="text-gray-700">安全多方计算：多方合作分析数据而不泄露各自的信息</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 rounded-full bg-primary mr-2"></div>
+                            <span class="text-gray-700">云服务：在云端处理加密数据，保护用户隐私</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-secondary to-primary rounded-2xl blur opacity-20"></div>
+                    <div class="relative bg-white rounded-xl overflow-hidden shadow-lg">
+                        <img src="https://picsum.photos/seed/crypto/600/400" alt="同态加密原理" class="w-full h-auto">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold text-dark mb-2">同态加密原理</h4>
+                            <p class="text-gray-600">
+                                同态加密技术基于数学原理，通过精心设计的加密方案，使得对加密数据的计算可以转换为对密文的特定操作，
+                                最终得到加密的计算结果。只有拥有解密密钥的用户才能获取最终结果。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fa-solid fa-shield-halved text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">同态加密隐私保护系统</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        保护您的隐私数据，同时享受数据价值
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa-brands fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa-brands fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">功能</a></li>
+                        <li><a href="#demo" class="text-gray-400 hover:text-white transition-colors">演示</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors">关于</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">资源</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">文档</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">教程</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">API参考</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">常见问题</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-envelope text-primary mr-2"></i>
+                            <span class="text-gray-400">contact@homomorphic.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-phone text-primary mr-2"></i>
+                            <span class="text-gray-400">+86 123 4567 8910</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-map-marker text-primary mr-2"></i>
+                            <span class="text-gray-400">北京市海淀区西土城路10号</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+                <p>&copy; 2025 同态加密隐私保护系统. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                navbar.classList.add('bg-white/95', 'backdrop-blur-sm');
+                navbar.classList.remove('bg-white');
+            } else {
+                navbar.classList.remove('bg-white/95', 'backdrop-blur-sm');
+                navbar.classList.add('bg-white');
+            }
+        });
+
+        // 移动端菜单
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 侧边栏选项卡切换
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // 移除所有活动状态
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                // 添加当前活动状态
+                item.classList.add('active');
+                
+                // 获取当前选项卡ID
+                const tabId = item.getAttribute('data-tab');
+                
+                // 隐藏所有内容
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // 显示当前内容
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // 模拟数据
+        const employees = {};
+        const encryptedFiles = [];
+
+        // 模拟添加员工
+        function addEmployee(algorithm, name, salary) {
+            if (!name || !salary) {
+                return { success: false, message: '请输入姓名和工资' };
+            }
+            
+            if (isNaN(parseFloat(salary))) {
+                return { success: false, message: '工资必须是数字' };
+            }
+            
+            // 模拟加密过程
+            const encryptedSalary = `[加密数据:${salary}]`;
+            employees[algorithm] = employees[algorithm] || {};
+            employees[algorithm][name] = {
+                salary: encryptedSalary,
+                rawSalary: parseFloat(salary),
+                timestamp: new Date().toISOString()
+            };
+            
+            // 为FHEW和CKKS添加文件记录
+            if (algorithm === 'fhew' || algorithm === 'ckks') {
+                const fileId = `file_${Date.now()}`;
+                encryptedFiles.push({
+                    id: fileId,
+                    name: `${name}_salary_${algorithm}`,
+                    algorithm,
+                    employeeName: name,
+                    salary: encryptedSalary,
+                    rawSalary: parseFloat(salary),
+                    timestamp: new Date().toISOString()
+                });
+                
+                // 更新文件列表
+                updateFileList(algorithm);
+            }
+            
+            return { success: true, message: `${name} 的工资已使用${algorithm}算法加密存储` };
+        }
+
+        // 模拟比较工资
+        function compareSalaries(algorithm, name1, name2) {
+            if (!employees[algorithm] || !employees[algorithm][name1] || !employees[algorithm][name2]) {
+                return { success: false, message: '至少有一个员工不存在' };
+            }
+            
+            const salary1 = employees[algorithm][name1].rawSalary;
+            const salary2 = employees[algorithm][name2].rawSalary;
+            
+            // 模拟在加密数据上进行比较
+            const result = salary1 > salary2;
+            
+            return { 
+                success: true, 
+                message: `使用${algorithm}算法比较结果：${name1} 的工资 ${result ? '高于' : '低于或等于'} ${name2} 的工资`,
+                result 
+            };
+        }
+
+        // 模拟比较FHEW文件
+        function compareFiles(fileId1, fileId2) {
+            const file1 = encryptedFiles.find(f => f.id === fileId1);
+            const file2 = encryptedFiles.find(f => f.id === fileId2);
+            
+            if (!file1 || !file2) {
+                return { success: false, message: '至少有一个文件不存在' };
+            }
+            
+            if (file1.algorithm !== file2.algorithm) {
+                return { success: false, message: '不能比较不同算法加密的文件' };
+            }
+            
+            const result = file1.rawSalary > file2.rawSalary;
+            
+            return { 
+                success: true, 
+                message: `使用${file1.algorithm}算法比较结果：${file1.employeeName} 的工资 ${result ? '高于' : '低于或等于'} ${file2.employeeName} 的工资`,
+                result 
+            };
+        }
+
+        // 更新文件列表
+        function updateFileList(algorithm) {
+            const files = encryptedFiles.filter(f => f.algorithm === algorithm);
+            
+            if (algorithm === 'fhew') {
+                const fileList = document.getElementById('file-list');
+                const file1Select = document.getElementById('file1-select');
+                const file2Select = document.getElementById('file2-select');
+                
+                if (files.length === 0) {
+                    fileList.innerHTML = '<p class="text-gray-500">没有可用的加密文件</p>';
+                    file1Select.innerHTML = '<option value="">-- 请选择 --</option>';
+                    file2Select.innerHTML = '<option value="">-- 请选择 --</option>';
+                    return;
+                }
+                
+                let listHtml = '<ul class="space-y-2">';
+                files.forEach(file => {
+                    listHtml += `
+                        <li class="p-2 bg-gray-50 rounded-lg flex justify-between items-center">
+                            <div>
+                                <span class="font-medium">${file.name}</span>
+                                <div class="text-sm text-gray-500">${file.employeeName} - ${new Date(file.timestamp).toLocaleString()}</div>
+                            </div>
+                            <button class="text-primary text-sm" onclick="selectFile('${file.id}', 'fhew')">选择</button>
+                        </li>
+                    `;
+                });
+                listHtml += '</ul>';
+                fileList.innerHTML = listHtml;
+                
+                // 更新选择框
+                let selectHtml = '<option value="">-- 请选择 --</option>';
+                files.forEach(file => {
+                    selectHtml += `<option value="${file.id}">${file.name}</option>`;
+                });
+                file1Select.innerHTML = selectHtml;
+                file2Select.innerHTML = selectHtml;
+                
+            } else if (algorithm === 'ckks') {
+                const fileList = document.getElementById('ckks_file_list');
+                const file1Select = document.getElementById('file1_ckks');
+                const file2Select = document.getElementById('file2_ckks');
+                
+                if (files.length === 0) {
+                    fileList.innerHTML = '<p class="text-gray-500">没有可用的加密文件</p>';
+                    file1Select.innerHTML = '<option value="">-- 请选择 --</option>';
+                    file2Select.innerHTML = '<option value="">-- 请选择 --</option>';
+                    return;
+                }
+                
+                let listHtml = '<ul class="space-y-2">';
+                files.forEach(file => {
+                    listHtml += `
+                        <li class="p-2 bg-gray-50 rounded-lg flex justify-between items-center">
+                            <div>
+                                <span class="font-medium">${file.name}</span>
+                                <div class="text-sm text-gray-500">${file.employeeName} - ${new Date(file.timestamp).toLocaleString()}</div>
+                            </div>
+                            <button class="text-primary text-sm" onclick="selectFile('${file.id}', 'ckks')">选择</button>
+                        </li>
+                    `;
+                });
+                listHtml += '</ul>';
+                fileList.innerHTML = listHtml;
+                
+                // 更新选择框
+                let selectHtml = '<option value="">-- 请选择 --</option>';
+                files.forEach(file => {
+                    selectHtml += `<option value="${file.id}">${file.name}</option>`;
+                });
+                file1Select.innerHTML = selectHtml;
+                file2Select.innerHTML = selectHtml;
+            }
+        }
+
+        // 选择文件
+        function selectFile(fileId, algorithm) {
+            const file = encryptedFiles.find(f => f.id === fileId);
+            if (!file) return;
+            
+            if (algorithm === 'fhew') {
+                document.getElementById('file1-select').value = fileId;
+                document.getElementById('file1-details').innerHTML = `
+                    <p class="text-sm"><span class="font-medium">文件:</span> ${file.name}</p>
+                    <p class="text-sm"><span class="font-medium">员工:</span> ${file.employeeName}</p>
+                    <p class="text-sm"><span class="font-medium">加密算法:</span> ${file.algorithm}</p>
+                    <p class="text-sm"><span class="font-medium">加密时间:</span> ${new Date(file.timestamp).toLocaleString()}</p>
+                `;
+            } else if (algorithm === 'ckks') {
+                document.getElementById('file1_ckks').value = fileId;
+            }
+        }
+
+        // 更新TFHE员工列表
+        function updateTFHEEmployeeList() {
+            const listElement = document.getElementById('tfhe_employee_list');
+            const employeesList = employees['tfhe'] || {};
+            const names = Object.keys(employeesList);
+            
+            if (names.length === 0) {
+                listElement.innerHTML = '<p class="text-gray-500">没有可用的员工</p>';
+                return;
+            }
+            
+            let listHtml = '<ul class="space-y-2">';
+            names.forEach(name => {
+                const timestamp = new Date(employeesList[name].timestamp).toLocaleString();
+                listHtml += `
+                    <li class="p-2 bg-gray-50 rounded-lg flex justify-between items-center">
+                        <div>
+                            <span class="font-medium">${name}</span>
+                            <div class="text-sm text-gray-500">工资添加时间: ${timestamp}</div>
+                        </div>
+                        <button class="text-primary text-sm" onclick="selectTFHEEmployee('${name}')">选择</button>
+                    </li>
+                `;
+            });
+            listHtml += '</ul>';
+            listElement.innerHTML = listHtml;
+            
+            // 更新选择框
+            const name1Select = document.getElementById('name1_tfhe');
+            const name2Select = document.getElementById('name2_tfhe');
+            
+            let selectHtml = '<option value="">-- 请选择 --</option>';
+            names.forEach(name => {
+                selectHtml += `<option value="${name}">${name}</option>`;
+            });
+            name1Select.innerHTML = selectHtml;
+            name2Select.innerHTML = selectHtml;
+        }
+
+        // 选择TFHE员工
+        function selectTFHEEmployee(name) {
+            document.getElementById('name1_tfhe').value = name;
+        }
+
+        // BGV相关函数
+        function addEmployeeBGV() {
+            const name = document.getElementById('name_bgv').value;
+            const salary = document.getElementById('salary_bgv').value;
+            const result = addEmployee('bgv', name, salary);
+            document.getElementById('add_result_bgv').innerHTML = result.message;
+        }
+
+        function compareSalariesBGV() {
+            const name1 = document.getElementById('name1_bgv').value;
+            const name2 = document.getElementById('name2_bgv').value;
+            const result = compareSalaries('bgv', name1, name2);
+            
+            if (result.success) {
+                document.getElementById('comparison_result_bgv').innerHTML = `
+                    <div class="text-green-700 font-medium">
+                        <i class="fa-solid fa-check-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            } else {
+                document.getElementById('comparison_result_bgv').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            }
+        }
+
+        function decryptSalaryBGV() {
+            const name = document.getElementById('name_decrypt_bgv').value;
+            if (!employees['bgv'] || !employees['bgv'][name]) {
+                document.getElementById('decrypted_salary_bgv').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> 员工不存在
+                    </div>
+                `;
+                return;
+            }
+            
+            // 模拟解密过程
+            const rawSalary = employees['bgv'][name].rawSalary;
+            document.getElementById('decrypted_salary_bgv').innerHTML = `
+                <div class="text-green-700">
+                    <i class="fa-solid fa-unlock mr-2"></i> ${name} 的工资是: ${rawSalary}
+                </div>
+            `;
+        }
+
+        // BFV相关函数
+        function addEmployeeBFV() {
+            const name = document.getElementById('name_bfv').value;
+            const salary = document.getElementById('salary_bfv').value;
+            const result = addEmployee('bfv', name, salary);
+            document.getElementById('add_result_bfv').innerHTML = result.message;
+        }
+
+        function compareSalariesBFV() {
+            const name1 = document.getElementById('name1_bfv').value;
+            const name2 = document.getElementById('name2_bfv').value;
+            const result = compareSalaries('bfv', name1, name2);
+            
+            if (result.success) {
+                document.getElementById('comparison_result_bfv').innerHTML = `
+                    <div class="text-green-700 font-medium">
+                        <i class="fa-solid fa-check-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            } else {
+                document.getElementById('comparison_result_bfv').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            }
+        }
+
+        function decryptSalaryBFV() {
+            const name = document.getElementById('name_decrypt_bfv').value;
+            if (!employees['bfv'] || !employees['bfv'][name]) {
+                document.getElementById('decrypted_salary_bfv').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> 员工不存在
+                    </div>
+                `;
+                return;
+            }
+            
+            // 模拟解密过程
+            const rawSalary = employees['bfv'][name].rawSalary;
+            document.getElementById('decrypted_salary_bfv').innerHTML = `
+                <div class="text-green-700">
+                    <i class="fa-solid fa-unlock mr-2"></i> ${name} 的工资是: ${rawSalary}
+                </div>
+            `;
+        }
+
+        // FHEW相关函数
+        function encryptSalaryFHEW() {
+            const name = document.getElementById('employee-name').value;
+            const salary = document.getElementById('salary-amount').value;
+            const result = addEmployee('fhew', name, salary);
+            document.getElementById('encrypt-result').innerHTML = result.message;
+        }
+
+        function compareSalariesFHEW() {
+            const file1Id = document.getElementById('file1-select').value;
+            const file2Id = document.getElementById('file2-select').value;
+            
+            if (!file1Id || !file2Id) {
+                document.getElementById('compare-result').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> 请选择两个文件进行比较
+                    </div>
+                `;
+                return;
+            }
+            
+            const result = compareFiles(file1Id, file2Id);
+            
+            if (result.success) {
+                document.getElementById('compare-result').innerHTML = `
+                    <div class="text-green-700 font-medium">
+                        <i class="fa-solid fa-check-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            } else {
+                document.getElementById('compare-result').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            }
+        }
+
+        // CKKS相关函数
+        function addEmployeeCKKS() {
+            const name = document.getElementById('name_ckks').value;
+            const salary = document.getElementById('salary_ckks').value;
+            const result = addEmployee('ckks', name, salary);
+            document.getElementById('add_result_ckks').innerHTML = result.message;
+        }
+
+        function compareSalariesCKKS() {
+            const file1Id = document.getElementById('file1_ckks').value;
+            const file2Id = document.getElementById('file2_ckks').value;
+            
+            if (!file1Id || !file2Id) {
+                document.getElementById('comparison_result_ckks').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> 请选择两个文件进行比较
+                    </div>
+                `;
+                return;
+            }
+            
+            const result = compareFiles(file1Id, file2Id);
+            
+            if (result.success) {
+                document.getElementById('comparison_result_ckks').innerHTML = `
+                    <div class="text-green-700 font-medium">
+                        <i class="fa-solid fa-check-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            } else {
+                document.getElementById('comparison_result_ckks').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            }
+        }
+
+        // TFHE相关函数
+        function addEmployeeTFHE() {
+            const name = document.getElementById('name_tfhe').value;
+            const salary = document.getElementById('salary_tfhe').value;
+            const result = addEmployee('tfhe', name, salary);
+            document.getElementById('add_result_tfhe').innerHTML = result.message;
+            
+            // 更新员工列表
+            updateTFHEEmployeeList();
+        }
+
+        function compareSalariesTFHE() {
+            const name1 = document.getElementById('name1_tfhe').value;
+            const name2 = document.getElementById('name2_tfhe').value;
+            
+            if (!name1 || !name2) {
+                document.getElementById('comparison_result_tfhe').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> 请选择两个员工进行比较
+                    </div>
+                `;
+                return;
+            }
+            
+            const result = compareSalaries('tfhe', name1, name2);
+            
+            if (result.success) {
+                document.getElementById('comparison_result_tfhe').innerHTML = `
+                    <div class="text-green-700 font-medium">
+                        <i class="fa-solid fa-check-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            } else {
+                document.getElementById('comparison_result_tfhe').innerHTML = `
+                    <div class="text-red-700">
+                        <i class="fa-solid fa-exclamation-circle mr-2"></i> ${result.message}
+                    </div>
+                `;
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化文件列表
+            updateFileList('fhew');
+            updateFileList('ckks');
+            updateTFHEEmployeeList();
+        });
+    </script>
+</body>
+</html>

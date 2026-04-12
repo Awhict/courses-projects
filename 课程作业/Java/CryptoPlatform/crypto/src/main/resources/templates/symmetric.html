@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>对称加密算法</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="nav :: navbar"></div>
+
+<div class="wrapper">
+    <!-- 左侧算法导航 -->
+    <div class="sidebar">
+        <h3>算法选择</h3>
+        <ul>
+            <li class="alg-item active" data-target="aes">AES</li>
+            <li class="alg-item" data-target="rc6">RC6</li>
+            <li class="alg-item" data-target="sm4">SM4</li>
+        </ul>
+    </div>
+
+    <!-- 右侧表单内容 -->
+    <div class="content">
+        <div class="container">
+
+            <!-- AES -->
+            <div id="aes" class="form-section active">
+                <h2>AES 加密 / 解密</h2>
+                <form class="cryptoForm" data-api="/api/aes">
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="encrypt">加密</option>
+                        <option value="decrypt">解密</option>
+                    </select>
+                    <label>密钥：</label>
+                    <input type="text" name="key" required>
+                    <label>IV：</label>
+                    <input type="text" name="iv" class="iv-field" required>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <!-- RC6 -->
+            <div id="rc6" class="form-section">
+                <h2>RC6 加密 / 解密</h2>
+                <form class="cryptoForm" data-api="/api/rc6">
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="encrypt">加密</option>
+                        <option value="decrypt">解密</option>
+                    </select>
+                    <label>密钥：</label>
+                    <input type="text" name="key" required>
+                    <label>IV：</label>
+                    <input type="text" name="iv" class="iv-field" required>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <!-- SM4 -->
+            <div id="sm4" class="form-section">
+                <h2>SM4 加密 / 解密</h2>
+                <form class="cryptoForm" data-api="/api/sm4">
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="encrypt">加密</option>
+                        <option value="decrypt">解密</option>
+                    </select>
+                    <label>密钥：</label>
+                    <input type="text" name="key" required>
+                    <label>IV：</label>
+                    <input type="text" name="iv" class="iv-field" required>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // 生成 Base64 编码的随机 IV（16 字节 = 128 位）
+    function generateRandomIV(length = 16) {
+        const array = new Uint8Array(length);
+        crypto.getRandomValues(array);
+        return btoa(String.fromCharCode(...array)); // 转为 base64 字符串
+    }
+
+    // 初始化所有 IV 字段
+    function initAllIVs() {
+        document.querySelectorAll('.iv-field').forEach(input => {
+            input.value = generateRandomIV();
+        });
+    }
+
+    // 为某个 section 中的 IV 初始化新值
+    function initIVForSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        const ivInput = section.querySelector('.iv-field');
+        if (ivInput) {
+            ivInput.value = generateRandomIV();
+        }
+    }
+
+    // 页面加载时为所有 IV 初始化
+    window.addEventListener('DOMContentLoaded', () => {
+        initAllIVs();
+    });
+
+    // 切换算法表单显示
+    const items = document.querySelectorAll('.alg-item');
+    const sections = document.querySelectorAll('.form-section');
+
+    items.forEach(item => {
+        item.addEventListener('click', () => {
+            items.forEach(i => i.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+
+            const target = item.getAttribute('data-target');
+            item.classList.add('active');
+            document.getElementById(target).classList.add('active');
+
+            // 重新生成该 section 的 IV
+            initIVForSection(target);
+        });
+    });
+
+    // 表单提交处理
+    document.querySelectorAll('.cryptoForm').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const apiBase = form.getAttribute("data-api");
+            const operation = form.operation.value;
+            const url = `${apiBase}/${operation}`;
+
+            const key = form.key.value;
+            const iv = form.iv.value;
+            const input = form.input.value;
+
+            const params = new URLSearchParams({ key, iv });
+            if (operation === "encrypt") {
+                params.append("plaintext", input);
+            } else {
+                params.append("ciphertext", input);
+            }
+
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString()
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const resultBox = form.nextElementSibling;
+                    if (data.status === 0) {
+                        resultBox.textContent = data.result;
+                        resultBox.style.color = "#2c3e50";
+                    } else {
+                        resultBox.textContent = "错误：" + data.error;
+                        resultBox.style.color = "#e74c3c";
+                    }
+                })
+                .catch(error => {
+                    const resultBox = form.nextElementSibling;
+                    resultBox.textContent = "请求失败：" + error;
+                    resultBox.style.color = "#e67e22";
+                });
+        });
+    });
+</script>
+
+</body>
+</html>

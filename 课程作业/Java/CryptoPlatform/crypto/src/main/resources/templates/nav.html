@@ -1,0 +1,30 @@
+<!-- nav.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<div th:fragment="navbar">
+  <nav style="background-color: #2c3e50; padding: 10px 0;">
+    <ul style="
+      list-style: none;
+      margin: 10px;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+    ">
+      <li><a href="/" style="color: white; text-decoration: none; font-weight: bold; padding: 8px 16px; transition: background-color 0.3s; border-radius: 5px;">主页</a></li>
+      <li><a href="/symmetric" style="color: white; text-decoration: none; font-weight: bold; padding: 8px 16px; transition: background-color 0.3s; border-radius: 5px;">对称加密</a></li>
+      <li><a href="/asymmetric" style="color: white; text-decoration: none; font-weight: bold; padding: 8px 16px; transition: background-color 0.3s; border-radius: 5px;">非对称加密</a></li>
+      <li><a href="/hash" style="color: white; text-decoration: none; font-weight: bold; padding: 8px 16px; transition: background-color 0.3s; border-radius: 5px;">哈希算法</a></li>
+      <li><a href="/encode" style="color: white; text-decoration: none; font-weight: bold; padding: 8px 16px; transition: background-color 0.3s; border-radius: 5px;">编码转换</a></li>
+    </ul>
+  </nav>
+</div>
+</body>
+</html>

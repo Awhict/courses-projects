@@ -1,0 +1,151 @@
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #45617e;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar h3 {
+    color: #ecf0f1;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin: 10px 0;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.sidebar li:hover, .sidebar li.active {
+    background-color: #6088af;
+}
+
+.content {
+    flex: 1;
+    padding: 40px;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #45617e;
+    margin-bottom: 30px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+label {
+    font-weight: bold;
+    color: #6088af;
+}
+
+textarea, input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    resize: vertical;
+}
+
+button {
+    padding: 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.result-box {
+    background-color: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.form-section {
+    display: none;
+}
+
+.form-section.active {
+    display: block;
+}
+
+.result-box {
+    background-color: #ecf7ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: monospace;
+    border: 1px solid #b3dffc;
+}
+
+.keypair-modal {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    z-index: 999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.keypair-modal pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #f7f7f7;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 13px;
+    border-radius: 4px;
+}
+
+.modal-close {
+    float: right;
+    cursor: pointer;
+    color: #e74c3c;
+}

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编码算法</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="nav :: navbar"></div>
+
+<div class="wrapper">
+    <div class="sidebar">
+        <h3>编码算法</h3>
+        <ul>
+            <li class="alg-item active" data-target="base64">Base64</li>
+            <li class="alg-item" data-target="utf8">UTF-8</li>
+            <li class="alg-item" data-target="unicode">Unicode</li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="container">
+
+            <!-- Base64 -->
+            <div id="base64" class="form-section active">
+                <h2>Base64 编码 / 解码</h2>
+                <form class="encodeForm" data-api="/api/encode/base64">
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="encode">编码</option>
+                        <option value="decode">解码</option>
+                    </select>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <!-- UTF-8 -->
+            <div id="utf8" class="form-section">
+                <h2>UTF-8 编码 / 解码</h2>
+                <form class="encodeForm" data-api="/api/encode/utf8">
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="encode">编码</option>
+                        <option value="decode">解码</option>
+                    </select>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+            <!-- Unicode -->
+            <div id="unicode" class="form-section">
+                <h2>Unicode 编码 / 解码</h2>
+                <form class="encodeForm" data-api="/api/encode/unicode">
+                    <label>操作类型：</label>
+                    <select name="operation" required>
+                        <option value="encode">编码</option>
+                        <option value="decode">解码</option>
+                    </select>
+                    <label>输入内容：</label>
+                    <textarea name="input" rows="4" required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+                <div class="result-box"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // 切换算法表单显示
+    const items = document.querySelectorAll('.alg-item');
+    const sections = document.querySelectorAll('.form-section');
+
+    items.forEach(item => {
+        item.addEventListener('click', () => {
+            items.forEach(i => i.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+
+            item.classList.add('active');
+            document.getElementById(item.getAttribute('data-target')).classList.add('active');
+        });
+    });
+
+    // 所有表单提交处理
+    document.querySelectorAll('.encodeForm').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const apiBase = form.getAttribute("data-api");
+            const operation = form.operation.value;
+            const url = `${apiBase}/${operation}`;
+            const input = form.input.value;
+
+            const params = new URLSearchParams({ input });
+
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString()
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const resultBox = form.nextElementSibling;
+                    if (data.status === 0) {
+                        resultBox.textContent = data.result;
+                        resultBox.style.color = "#2c3e50";
+                    } else {
+                        resultBox.textContent = "错误：" + data.error;
+                        resultBox.style.color = "#e74c3c";
+                    }
+                })
+                .catch(error => {
+                    const resultBox = form.nextElementSibling;
+                    resultBox.textContent = "请求失败：" + error;
+                    resultBox.style.color = "#e67e22";
+                });
+        });
+    });
+</script>
+</body>
+</html>

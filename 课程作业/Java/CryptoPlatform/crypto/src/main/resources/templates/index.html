@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>密码算法工具首页</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .footer img {
+            width: 180px; /* 调整logo大小 */
+            height: auto;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<div th:replace="nav :: navbar"></div>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">欢迎使用网络信息安全密码算法工具</h2>
+
+    <div class="row g-4">
+
+        <!-- 对称加密模块 -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">对称加密</h5>
+                    <p class="card-text">支持 AES、SM4、RC6 等常见对称加密算法。</p>
+                    <a href="symmetric" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 非对称加密模块 -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">非对称加密</h5>
+                    <p class="card-text">支持 RSA、ECC、RSA-SHA1、ECDSA 等公钥加密算法。</p>
+                    <a href="asymmetric" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 哈希算法模块 -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">哈希算法</h5>
+                    <p class="card-text">支持 SHA1、SHA256、SHA3、RIPEMD160、HMAC、PBKDF2 等。</p>
+                    <a href="hash" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 编码模块 -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">编码工具</h5>
+                    <p class="card-text">支持 Base64 编码、UTF-8 编码等常见数据转换功能。</p>
+                    <a href="encode" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 页脚版权信息 -->
+<footer class="text-center">
+    <div class="container d-flex flex-column align-items-center">
+        <div class="mb-2">
+            <img src="/images/logo.png" alt="Logo" class="img-fluid" style="max-width: 300px;">
+        </div>
+        <div>
+            <small>版权所有 &copy; [[${#dates.format(#dates.createNow(), 'yyyy')}]] 程彦超 · 网络信息安全密码算法工具</small>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
