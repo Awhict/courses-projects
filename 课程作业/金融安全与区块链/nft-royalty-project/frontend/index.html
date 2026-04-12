@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtBlock - 数字藏品交易平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="script.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#7B61FF',
+                        accent: '#FF6B6B',
+                        dark: '#1D2939',
+                        'dark-light': '#344054',
+                        light: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-transform {
+                transition-property: transform;
+                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                transition-duration: 300ms;
+            }
+            .scale-hover {
+                @apply hover:scale-105 transition-all duration-300;
+            }
+            .card-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark antialiased">
+    <!-- 导航栏 -->
+    <header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="text-primary text-3xl">
+                    <i class="fa fa-cube"></i>
+                </div>
+                <span class="text-xl font-bold text-primary">ArtBlock</span>
+            </div>
+            
+            <!-- 桌面导航 -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#marketplace" class="font-medium hover:text-primary transition-colors">市场</a>
+                <a href="#discover" class="font-medium hover:text-primary transition-colors">发现</a>
+                <a href="#creators" class="font-medium hover:text-primary transition-colors">创作者</a>
+                <a href="#about" class="font-medium hover:text-primary transition-colors">关于</a>
+            </nav>
+            
+            <div class="flex items-center space-x-4">
+                <button id="searchBtn" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-search text-gray-600"></i>
+                </button>
+                <button id="walletConnectBtn" class="hidden md:flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="fa fa-wallet"></i>
+                    <span>连接钱包</span>
+                </button>
+                <button id="mobileMenuBtn" class="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-bars text-gray-600"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-100">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#marketplace" class="py-2 font-medium hover:text-primary transition-colors">市场</a>
+                <a href="#discover" class="py-2 font-medium hover:text-primary transition-colors">发现</a>
+                <a href="#creators" class="py-2 font-medium hover:text-primary transition-colors">创作者</a>
+                <a href="#about" class="py-2 font-medium hover:text-primary transition-colors">关于</a>
+                <button id="mobileWalletConnectBtn" class="flex items-center justify-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="fa fa-wallet"></i>
+                    <span>连接钱包</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="pt-20">
+        <!-- 英雄区域 -->
+        <section class="relative bg-gradient-to-r from-primary/90 to-secondary/90 text-white py-20 md:py-32 overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute top-0 left-0 w-full h-full bg-[url('https://picsum.photos/id/1/1920/1080')] bg-cover bg-center"></div>
+            </div>
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="max-w-3xl">
+                    <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight mb-6 text-shadow">
+                        探索、收藏和交易独特的数字艺术品
+                    </h1>
+                    <p class="text-[clamp(1rem,2vw,1.25rem)] mb-8 text-white/90">
+                        ArtBlock是一个基于区块链的数字藏品交易平台，确保艺术品的真实性、所有权和创作者权益。
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#marketplace" class="bg-white text-primary px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors scale-hover">
+                            浏览市场
+                        </a>
+                        <a href="#create" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors scale-hover">
+                            创建藏品
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 波浪装饰 -->
+            <div class="absolute bottom-0 left-0 w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" class="w-full h-auto">
+                    <path fill="#F9FAFB" fill-opacity="1" d="M0,96L60,85.3C120,75,240,53,360,53.3C480,53,600,75,720,80C840,85,960,75,1080,64C1200,53,1320,43,1380,37.3L1440,32L1440,120L1380,120C1320,120,1200,120,1080,120C960,120,840,120,720,120C600,120,480,120,360,120C240,120,120,120,60,120L0,120Z"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 统计数据 -->
+        <section class="py-12 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div class="p-6 rounded-xl bg-gray-50 card-shadow">
+                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2">¥1.2B+</div>
+                        <div class="text-gray-600">交易总额</div>
+                    </div>
+                    <div class="p-6 rounded-xl bg-gray-50 card-shadow">
+                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2">250K+</div>
+                        <div class="text-gray-600">数字藏品</div>
+                    </div>
+                    <div class="p-6 rounded-xl bg-gray-50 card-shadow">
+                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2">85K+</div>
+                        <div class="text-gray-600">活跃创作者</div>
+                    </div>
+                    <div class="p-6 rounded-xl bg-gray-50 card-shadow">
+                        <div class="text-3xl md:text-4xl font-bold text-primary mb-2">1.5M+</div>
+                        <div class="text-gray-600">社区用户</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 市场区域 -->
+        <section id="marketplace" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+                    <div>
+                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2">热门数字藏品</h2>
+                        <p class="text-gray-600">探索最受欢迎的数字艺术品</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-4 md:mt-0">
+                        <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">全部</button>
+                        <button class="bg-white text-dark-light px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">艺术</button>
+                        <button class="bg-white text-dark-light px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">摄影</button>
+                        <button class="bg-white text-dark-light px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">音乐</button>
+                        <button class="bg-white text-dark-light px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">视频</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- 藏品卡片 1 -->
+                    <div class="bg-white rounded-xl overflow-hidden card-shadow scale-hover">
+                        <div class="relative">
+                            <img src="https://picsum.photos/id/237/600/400" alt="数字艺术品" class="w-full h-64 object-cover">
+                            <div class="absolute top-3 right-3 bg-primary text-white text-xs font-medium px-2 py-1 rounded">热门</div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-semibold text-lg">未来城市 #342</h3>
+                                <div class="flex items-center text-accent">
+                                    <i class="fa fa-cny mr-1"></i>
+                                    <span class="font-bold">2,450</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <img src="https://picsum.photos/id/64/100/100" alt="创作者头像" class="w-6 h-6 rounded-full mr-2">
+                                <span>by @future_creator</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fa fa-eye mr-1"></i>
+                                    <span>245</span>
+                                </div>
+                                <button class="bg-primary/10 text-primary px-3 py-1 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                                    立即购买
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 藏品卡片 2 -->
+                    <div class="bg-white rounded-xl overflow-hidden card-shadow scale-hover">
+                        <div class="relative">
+                            <img src="https://picsum.photos/id/96/600/400" alt="数字艺术品" class="w-full h-64 object-cover">
+                            <div class="absolute top-3 right-3 bg-secondary text-white text-xs font-medium px-2 py-1 rounded">新上架</div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-semibold text-lg">抽象梦境 #108</h3>
+                                <div class="flex items-center text-accent">
+                                    <i class="fa fa-cny mr-1"></i>
+                                    <span class="font-bold">1,890</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <img src="https://picsum.photos/id/65/100/100" alt="创作者头像" class="w-6 h-6 rounded-full mr-2">
+                                <span>by @dream_artist</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fa fa-eye mr-1"></i>
+                                    <span>189</span>
+                                </div>
+                                <button class="bg-primary/10 text-primary px-3 py-1 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                                    立即购买
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 藏品卡片 3 -->
+                    <div class="bg-white rounded-xl overflow-hidden card-shadow scale-hover">
+                        <div class="relative">
+                            <img src="https://picsum.photos/id/102/600/400" alt="数字艺术品" class="w-full h-64 object-cover">
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-semibold text-lg">星际旅行 #76</h3>
+                                <div class="flex items-center text-accent">
+                                    <i class="fa fa-cny mr-1"></i>
+                                    <span class="font-bold">3,200</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <img src="https://picsum.photos/id/66/100/100" alt="创作者头像" class="w-6 h-6 rounded-full mr-2">
+                                <span>by @space_explorer</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fa fa-eye mr-1"></i>
+                                    <span>310</span>
+                                </div>
+                                <button class="bg-primary/10 text-primary px-3 py-1 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                                    立即购买
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 藏品卡片 4 -->
+                    <div class="bg-white rounded-xl overflow-hidden card-shadow scale-hover">
+                        <div class="relative">
+                            <img src="https://picsum.photos/id/107/600/400" alt="数字艺术品" class="w-full h-64 object-cover">
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-semibold text-lg">深海秘境 #52</h3>
+                                <div class="flex items-center text-accent">
+                                    <i class="fa fa-cny mr-1"></i>
+                                    <span class="font-bold">1,590</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <img src="https://picsum.photos/id/67/100/100" alt="创作者头像" class="w-6 h-6 rounded-full mr-2">
+                                <span>by @ocean_dweller</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fa fa-eye mr-1"></i>
+                                    <span>205</span>
+                                </div>
+                                <button class="bg-primary/10 text-primary px-3 py-1 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                                    立即购买
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-10">
+                    <button class="bg-white text-primary border border-primary px-6 py-3 rounded-lg font-medium hover:bg-primary/5 transition-colors">
+                        查看更多藏品
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 发现区域 -->
+        <section id="discover" class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2 text-center">发现精选藏品</h2>
+                <p class="text-gray-600 text-center max-w-2xl mx-auto mb-12">我们的专家团队精心挑选了这些独特的数字艺术品，每一件都代表着创作者的独特视角和创意表达</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- 精选藏品 1 -->
+                    <div class="bg-gray-50 rounded-xl overflow-hidden flex flex-col md:flex-row card-shadow scale-hover">
+                        <div class="md:w-1/2">
+                            <img src="https://picsum.photos/id/1015/800/800" alt="精选数字艺术品" class="w-full h-full object-cover">
+                        </div>
+                        <div class="md:w-1/2 p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center text-sm text-gray-500 mb-3">
+                                    <img src="https://picsum.photos/id/91/100/100" alt="创作者头像" class="w-8 h-8 rounded-full mr-2">
+                                    <span>by @masterpiece_creator</span>
+                                </div>
+                                <h3 class="font-bold text-2xl mb-3">宇宙奥秘 #42</h3>
+                                <p class="text-gray-600 mb-4">这幅作品探索了宇宙的无限奥秘和人类对未知的永恒追求，融合了现代数字艺术和传统绘画技巧。</p>
+                                <div class="flex items-center mb-4">
+                                    <div class="mr-6">
+                                        <div class="text-sm text-gray-500">当前价格</div>
+                                        <div class="font-bold text-xl text-accent">
+                                            <i class="fa fa-cny mr-1"></i>5,800
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm text-gray-500">版税</div>
+                                        <div class="font-bold text-xl">5%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                出价购买
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 精选藏品 2 -->
+                    <div class="bg-gray-50 rounded-xl overflow-hidden flex flex-col md:flex-row card-shadow scale-hover">
+                        <div class="md:w-1/2">
+                            <img src="https://picsum.photos/id/1025/800/800" alt="精选数字艺术品" class="w-full h-full object-cover">
+                        </div>
+                        <div class="md:w-1/2 p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center text-sm text-gray-500 mb-3">
+                                    <img src="https://picsum.photos/id/92/100/100" alt="创作者头像" class="w-8 h-8 rounded-full mr-2">
+                                    <span>by @digital_visionary</span>
+                                </div>
+                                <h3 class="font-bold text-2xl mb-3">赛博朋克城市 #17</h3>
+                                <p class="text-gray-600 mb-4">这是一个未来主义的数字城市景观，展示了科技与自然的融合，以及人类在高度发达的数字世界中的角色。</p>
+                                <div class="flex items-center mb-4">
+                                    <div class="mr-6">
+                                        <div class="text-sm text-gray-500">当前价格</div>
+                                        <div class="font-bold text-xl text-accent">
+                                            <i class="fa fa-cny mr-1"></i>7,200
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm text-gray-500">版税</div>
+                                        <div class="font-bold text-xl">5%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                                出价购买
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 创作者区域 -->
+        <section id="creators" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+                    <div>
+                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2">顶级创作者</h2>
+                        <p class="text-gray-600">认识我们平台上最有才华的数字艺术家</p>
+                    </div>
+                    <button class="mt-4 md:mt-0 bg-white text-primary border border-primary px-4 py-2 rounded-lg font-medium hover:bg-primary/5 transition-colors">
+                        查看全部创作者
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    <!-- 创作者卡片 1 -->
+                    <div class="bg-white rounded-xl p-5 text-center card-shadow scale-hover">
+                        <div class="relative w-24 h-24 mx-auto mb-4">
+                            <img src="https://picsum.photos/id/64/200/200" alt="创作者头像" class="w-full h-full rounded-full object-cover border-4 border-primary">
+                            <div class="absolute -bottom-2 -right-2 bg-primary text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center">
+                                1
+                            </div>
+                        </div>
+                        <h3 class="font-semibold mb-1">Future Creator</h3>
+                        <p class="text-gray-500 text-sm mb-3">@future_creator</p>
+                        <div class="flex items-center justify-center text-accent mb-4">
+                            <i class="fa fa-cny mr-1"></i>
+                            <span class="font-bold">¥428,500</span>
+                        </div>
+                        <button class="w-full bg-primary/10 text-primary px-3 py-2 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                            关注
+                        </button>
+                    </div>
+
+                    <!-- 创作者卡片 2 -->
+                    <div class="bg-white rounded-xl p-5 text-center card-shadow scale-hover">
+                        <div class="relative w-24 h-24 mx-auto mb-4">
+                            <img src="https://picsum.photos/id/65/200/200" alt="创作者头像" class="w-full h-full rounded-full object-cover border-4 border-primary">
+                            <div class="absolute -bottom-2 -right-2 bg-primary text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center">
+                                2
+                            </div>
+                        </div>
+                        <h3 class="font-semibold mb-1">Dream Artist</h3>
+                        <p class="text-gray-500 text-sm mb-3">@dream_artist</p>
+                        <div class="flex items-center justify-center text-accent mb-4">
+                            <i class="fa fa-cny mr-1"></i>
+                            <span class="font-bold">¥376,200</span>
+                        </div>
+                        <button class="w-full bg-primary/10 text-primary px-3 py-2 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                            关注
+                        </button>
+                    </div>
+
+                    <!-- 创作者卡片 3 -->
+                    <div class="bg-white rounded-xl p-5 text-center card-shadow scale-hover">
+                        <div class="relative w-24 h-24 mx-auto mb-4">
+                            <img src="https://picsum.photos/id/66/200/200" alt="创作者头像" class="w-full h-full rounded-full object-cover border-4 border-primary">
+                            <div class="absolute -bottom-2 -right-2 bg-primary text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center">
+                                3
+                            </div>
+                        </div>
+                        <h3 class="font-semibold mb-1">Space Explorer</h3>
+                        <p class="text-gray-500 text-sm mb-3">@space_explorer</p>
+                        <div class="flex items-center justify-center text-accent mb-4">
+                            <i class="fa fa-cny mr-1"></i>
+                            <span class="font-bold">¥315,800</span>
+                        </div>
+                        <button class="w-full bg-primary/10 text-primary px-3 py-2 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                            关注
+                        </button>
+                    </div>
+
+                    <!-- 创作者卡片 4 -->
+                    <div class="bg-white rounded-xl p-5 text-center card-shadow scale-hover">
+                        <div class="relative w-24 h-24 mx-auto mb-4">
+                            <img src="https://picsum.photos/id/67/200/200" alt="创作者头像" class="w-full h-full rounded-full object-cover border-4 border-primary">
+                            <div class="absolute -bottom-2 -right-2 bg-primary text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center">
+                                4
+                            </div>
+                        </div>
+                        <h3 class="font-semibold mb-1">Ocean Dweller</h3>
+                        <p class="text-gray-500 text-sm mb-3">@ocean_dweller</p>
+                        <div class="flex items-center justify-center text-accent mb-4">
+                            <i class="fa fa-cny mr-1"></i>
+                            <span class="font-bold">¥294,300</span>
+                        </div>
+                        <button class="w-full bg-primary/10 text-primary px-3 py-2 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                            关注
+                        </button>
+                    </div>
+
+                    <!-- 创作者卡片 5 -->
+                    <div class="bg-white rounded-xl p-5 text-center card-shadow scale-hover">
+                        <div class="relative w-24 h-24 mx-auto mb-4">
+                            <img src="https://picsum.photos/id/68/200/200" alt="创作者头像" class="w-full h-full rounded-full object-cover border-4 border-primary">
+                            <div class="absolute -bottom-2 -right-2 bg-primary text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center">
+                                5
+                            </div>
+                        </div>
+                        <h3 class="font-semibold mb-1">Cyber Illustrator</h3>
+                        <p class="text-gray-500 text-sm mb-3">@cyber_illustrator</p>
+                        <div class="flex items-center justify-center text-accent mb-4">
+                            <i class="fa fa-cny mr-1"></i>
+                            <span class="font-bold">¥268,700</span>
+                        </div>
+                        <button class="w-full bg-primary/10 text-primary px-3 py-2 rounded-lg text-sm hover:bg-primary/20 transition-colors">
+                            关注
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 如何使用区域 -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2 text-center">如何开始使用 ArtBlock</h2>
+                <p class="text-gray-600 text-center max-w-2xl mx-auto mb-16">只需几步，您就可以开始收藏、交易和创作自己的数字艺术品</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 步骤 1 -->
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div class="text-3xl text-primary">
+                                <i class="fa fa-wallet"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">1. 连接您的数字钱包</h3>
+                        <p class="text-gray-600">选择您喜欢的数字钱包（如 MetaMask），并连接到我们的平台。这将是您交易和存储数字藏品的安全方式。</p>
+                    </div>
+
+                    <!-- 步骤 2 -->
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div class="text-3xl text-primary">
+                                <i class="fa fa-search"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">2. 浏览和发现藏品</h3>
+                        <p class="text-gray-600">探索我们平台上丰富多样的数字艺术品，按照类别、价格或创作者进行筛选，找到您喜欢的藏品。</p>
+                    </div>
+
+                    <!-- 步骤 3 -->
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div class="text-3xl text-primary">
+                                <i class="fa fa-shopping-cart"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">3. 购买或拍卖藏品</h3>
+                        <p class="text-gray-600">找到心仪的藏品后，您可以直接购买或参与拍卖。所有交易都在区块链上记录，确保安全透明。</p>
+                    </div>
+
+                    <!-- 步骤 4 -->
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div class="text-3xl text-primary">
+                                <i class="fa fa-paint-brush"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">4. 创建和发行您的藏品</h3>
+                        <p class="text-gray-600">如果您是创作者，可以轻松上传和发行自己的数字艺术品，设置版税并从后续销售中获得收益。</p>
+                    </div>
+
+                    <!-- 步骤 5 -->
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div class="text-3xl text-primary">
+                                <i class="fa fa-share-alt"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">5. 分享和展示您的收藏</h3>
+                        <p class="text-gray-600">在社交媒体上分享您的数字藏品，展示您的收藏品味，并与志同道合的艺术爱好者交流。</p>
+                    </div>
+
+                    <!-- 步骤 6 -->
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div class="text-3xl text-primary">
+                                <i class="fa fa-line-chart"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">6. 获得版税收益</h3>
+                        <p class="text-gray-600">作为创作者，您设置的版税将在每次转售时自动分配给您，确保您持续从作品中获得收益。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 创作者统计数据 -->
+        <section class="py-16 bg-gradient-to-r from-primary/90 to-secondary/90 text-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto text-center mb-12">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">为什么创作者选择 ArtBlock</h2>
+                    <p class="text-white/90">我们的平台为创作者提供了公平的收益分配机制和全面的版权保护</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/10 backdrop-blur-sm p-8 rounded-xl text-center">
+                        <div class="text-4xl font-bold mb-2">95%</div>
+                        <div class="text-xl mb-4">创作者收入</div>
+                        <p class="text-white/80">创作者从首次销售中获得95%的收入，远高于传统艺术市场的分成比例</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm p-8 rounded-xl text-center">
+                        <div class="text-4xl font-bold mb-2">5%</div>
+                        <div class="text-xl mb-4">永久版税</div>
+                        <p class="text-white/80">创作者在其作品的每次二次交易中自动获得5%的版税，确保持续收益</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm p-8 rounded-xl text-center">
+                        <div class="text-4xl font-bold mb-2">100%</div>
+                        <div class="text-xl mb-4">版权保护</div>
+                        <p class="text-white/80">基于区块链技术，为您的数字作品提供不可篡改的版权证明和交易记录</p>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center">
+                    <a href="#create" class="inline-block bg-white text-primary px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors scale-hover">
+                        开始创作
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 创建藏品区域 -->
+        <section id="create" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col lg:flex-row items-center gap-12">
+                    <div class="lg:w-1/2">
+                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">创建您的数字藏品</h2>
+                        <p class="text-gray-600 mb-6">将您的创意转化为独一无二的数字艺术品，在ArtBlock上展示和销售</p>
+                        
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 text-primary">
+                                    <i class="fa fa-check-circle text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg mb-1">简单上传流程</h3>
+                                    <p class="text-gray-600">只需几个步骤，即可上传您的作品并创建数字藏品</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 text-primary">
+                                    <i class="fa fa-check-circle text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg mb-1">灵活的版税设置</h3>
+                                    <p class="text-gray-600">设置您希望从每次二次销售中获得的版税比例</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 text-primary">
+                                    <i class="fa fa-check-circle text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg mb-1">多格式支持</h3>
+                                    <p class="text-gray-600">支持图片、视频、音频和3D模型等多种数字格式</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 text-primary">
+                                    <i class="fa fa-check-circle text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg mb-1">全球市场曝光</h3>
+                                    <p class="text-gray-600">将您的作品展示给全球数百万的艺术收藏家和爱好者</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="connectWalletBtn" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors scale-hover">
+                            连接钱包创建藏品
+                        </button>
+                    </div>
+                    
+                    <div id="createFormContainer" class="lg:w-1/2 bg-white p-8 rounded-xl card-shadow hidden">
+                        <div id="walletStatus" class="mb-6 p-4 bg-gray-100 rounded-lg">
+                            <p>已连接钱包: <span id="connectedAddress" class="font-medium">未连接</span></p>
+                            <p>当前网络: <span id="currentNetwork" class="font-medium">未知</span></p>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-6">上传您的作品</h3>
+                        
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center mb-6">
+                            <div class="text-4xl text-gray-400 mb-4">
+                                <i class="fa fa-cloud-upload"></i>
+                            </div>
+                            <h4 class="font-medium text-lg mb-2">拖放您的文件到这里</h4>
+                            <p class="text-gray-500 mb-4">支持 JPG, PNG, GIF, MP4, WEBM, MP3, WAV, OGG, GLB, GLTF</p>
+                            <input type="file" id="fileUpload" class="hidden" accept="image/*,video/*,audio/*,.glb,.gltf">
+                            <button id="selectFileBtn" class="bg-primary/10 text-primary px-4 py-2 rounded-lg font-medium hover:bg-primary/20 transition-colors">
+                                选择文件
+                            </button>
+                            <div id="filePreview" class="mt-4 hidden">
+                                <img id="previewImage" class="max-w-full h-auto rounded-lg" src="" alt="文件预览">
+                                <video id="previewVideo" class="max-w-full h-auto rounded-lg" controls></video>
+                                <audio id="previewAudio" class="w-full mt-2" controls></audio>
+                                <p id="previewFileName" class="mt-2 text-sm font-medium"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2" for="name">藏品名称</label>
+                                <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="例如：我的数字艺术品 #1">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2" for="description">描述</label>
+                                <textarea id="description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="描述您的作品..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2" for="price">价格 (CNY)</label>
+                                <input type="number" id="price" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="设置您的作品价格">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2" for="royalty">版税比例 (%)</label>
+                                <input type="number" id="royalty" min="0" max="100" step="0.1" value="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <p class="text-gray-500 text-sm mt-1">每次二次销售时您将获得的版税比例（默认5%）</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <button id="createNFTBtn" class="w-full bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center">
+                                <span>创建并列出藏品</span>
+                                <i id="txSpinner" class="fa fa-spinner fa-spin ml-2 hidden"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="txStatus" class="mt-6 p-4 rounded-lg hidden">
+                            <div id="txPending" class="bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500 p-4 hidden">
+                                <p class="font-medium">交易处理中</p>
+                                <p>您的藏品正在创建中，请等待区块链确认...</p>
+                                <p class="mt-2"><a id="txExplorerLink" href="#" target="_blank" class="text-primary underline">查看区块链交易</a></p>
+                            </div>
+                            <div id="txSuccess" class="bg-green-100 text-green-800 border-l-4 border-green-500 p-4 hidden">
+                                <p class="font-medium">交易成功</p>
+                                <p>您的藏品已成功创建并列出！</p>
+                                <p class="mt-2">藏品ID: <span id="tokenId" class="font-semibold"></span></p>
+                            </div>
+                            <div id="txError" class="bg-red-100 text-red-800 border-l-4 border-red-500 p-4 hidden">
+                                <p class="font-medium">交易失败</p>
+                                <p id="errorMessage">发生错误，请重试</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 平台数据统计 -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2 text-center">平台数据统计</h2>
+                <p class="text-gray-600 text-center max-w-2xl mx-auto mb-12">了解我们平台的最新趋势和统计数据</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- 交易数据图表 -->
+                    <div class="bg-gray-50 p-6 rounded-xl card-shadow">
+                        <h3 class="text-xl font-bold mb-6">月度交易数据</h3>
+                        <div class="h-80">
+                            <canvas id="transactionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 藏品类别分布 -->
+                    <div class="bg-gray-50 p-6 rounded-xl card-shadow">
+                        <h3 class="text-xl font-bold mb-6">藏品类别分布</h3>
+                        <div class="h-80">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 订阅区域 -->
+        <section class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">订阅我们的新闻通讯</h2>
+                    <p class="text-gray-600 mb-8">获取最新的数字艺术趋势、独家藏品发布和平台更新</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                        <input type="email" placeholder="输入您的邮箱地址" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <button class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
+                            立即订阅
+                        </button>
+                    </div>
+                    
+                    <p class="text-gray-500 text-sm mt-4">我们尊重您的隐私，不会向第三方分享您的信息</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="text-primary text-3xl">
+                            <i class="fa fa-cube"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">ArtBlock</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">ArtBlock是一个基于区块链的数字藏品交易平台，为创作者和收藏家提供安全、公平的数字艺术品交易环境。</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-discord"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-telegram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-6">快速链接</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#marketplace" class="text-gray-400 hover:text-white transition-colors">市场</a></li>
+                        <li><a href="#discover" class="text-gray-400 hover:text-white transition-colors">发现</a></li>
+                        <li><a href="#creators" class="text-gray-400 hover:text-white transition-colors">创作者</a></li>
+                        <li><a href="#create" class="text-gray-400 hover:text-white transition-colors">创建藏品</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">帮助中心</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-6">资源</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">平台博客</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">艺术家访谈</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">NFT指南</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">区块链技术</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">社区论坛</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-6">联系我们</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker mt-1 mr-3 text-primary"></i>
+                            <span class="text-gray-400">北京市海淀区中关村大街1号</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope mt-1 mr-3 text-primary"></i>
+                            <span class="text-gray-400">contact@artblock.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone mt-1 mr-3 text-primary"></i>
+                            <span class="text-gray-400">+86 10 1234 5678</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2025 ArtBlock. 保留所有权利。</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">隐私政策</a>
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">服务条款</a>
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Cookie政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 钱包连接模态框 -->
+    <div id="walletModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 scale-hover">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">连接钱包</h3>
+                <button id="closeWalletModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <p class="text-gray-600 mb-6">选择您的钱包提供商来连接ArtBlock</p>
+            
+            <div class="space-y-4">
+                <button class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-[#E8831D] flex items-center justify-center mr-3">
+                            <i class="fa fa-fire text-white"></i>
+                        </div>
+                        <span class="font-medium">MetaMask</span>
+                    </div>
+                    <i class="fa fa-chevron-right text-gray-400"></i>
+                </button>
+                
+                <button class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-[#0078D7] flex items-center justify-center mr-3">
+                            <i class="fa fa-windows text-white"></i>
+                        </div>
+                        <span class="font-medium">Coinbase Wallet</span>
+                    </div>
+                    <i class="fa fa-chevron-right text-gray-400"></i>
+                </button>
+                
+                <button class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-[#165DFF] flex items-center justify-center mr-3">
+                            <i class="fa fa-link text-white"></i>
+                        </div>
+                        <span class="font-medium">WalletConnect</span>
+                    </div>
+                    <i class="fa fa-chevron-right text-gray-400"></i>
+                </button>
+                
+                <button class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-[#000000] flex items-center justify-center mr-3">
+                            <i class="fa fa-lock text-white"></i>
+                        </div>
+                        <span class="font-medium">Ledger</span>
+                    </div>
+                    <i class="fa fa-chevron-right text-gray-400"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 区块链配置
+            const CONTRACT_ADDRESS = '0xYourNFTContractAddress';
+            const CHAIN_ID = '0x1'; // 主网
+            const chainConfig = {
+                chainId: CHAIN_ID,
+                chainName: 'Ethereum Mainnet',
+                nativeCurrency: {
+                    name: 'Ether',
+                    symbol: 'ETH',
+                    decimals: 18
+                },
+                rpcUrls: ['https://mainnet.infura.io/v3/YOUR_INFURA_KEY'],
+                blockExplorerUrls: ['https://etherscan.io']
+            };
+            
+            // 检查MetaMask
+            if (typeof window.ethereum === 'undefined') {
+                alert('请安装MetaMask钱包以使用此功能');
+                return;
+            }
+            
+            const web3 = new Web3(window.ethereum);
+            let contract;
+            let currentAccount = null;
+            
+            // 加载NFT合约ABI
+            async function loadContract() {
+                try {
+                    // 实际应用中应从服务器加载ABI
+                    const abiResponse = await fetch('/contracts/NFTContract.abi');
+                    const nftABI = await abiResponse.json();
+                    contract = new web3.eth.Contract(nftABI, CONTRACT_ADDRESS);
+                    console.log('合约已加载');
+                } catch (error) {
+                    console.error('加载合约失败:', error);
+                    alert('加载智能合约失败，请重试');
+                }
+            }
+            
+            // 连接钱包
+            document.getElementById('connectWalletBtn').addEventListener('click', async () => {
+                try {
+                    // 请求账户访问权限
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    currentAccount = accounts[0];
+                    document.getElementById('connectedAddress').textContent = currentAccount.substring(0, 6) + '...' + currentAccount.substring(38);
+                    
+                    // 检查网络
+                    const networkId = await web3.eth.net.getId();
+                    document.getElementById('currentNetwork').textContent = getNetworkName(networkId);
+                    
+                    // 加载合约
+                    await loadContract();
+                    
+                    // 显示表单
+                    document.getElementById('createFormContainer').classList.remove('hidden');
+                    document.getElementById('connectWalletBtn').classList.add('hidden');
+                } catch (error) {
+                    console.error('连接钱包失败:', error);
+                    alert('连接钱包失败: ' + error.message);
+                }
+            });
+            
+            // 监听账户变更
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) {
+                    console.log('用户已断开钱包连接');
+                    currentAccount = null;
+                    document.getElementById('connectedAddress').textContent = '未连接';
+                    document.getElementById('createFormContainer').classList.add('hidden');
+                    document.getElementById('connectWalletBtn').classList.remove('hidden');
+                } else {
+                    currentAccount = accounts[0];
+                    document.getElementById('connectedAddress').textContent = currentAccount.substring(0, 6) + '...' + currentAccount.substring(38);
+                }
+            });
+            
+            // 监听网络变更
+            window.ethereum.on('chainChanged', (chainId) => {
+                document.getElementById('currentNetwork').textContent = getNetworkName(parseInt(chainId));
+            });
+            
+            // 文件上传处理
+            document.getElementById('selectFileBtn').addEventListener('click', () => {
+                document.getElementById('fileUpload').click();
+            });
+            
+            document.getElementById('fileUpload').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                document.getElementById('previewFileName').textContent = file.name;
+                document.getElementById('filePreview').classList.remove('hidden');
+                
+                // 根据文件类型显示预览
+                if (file.type.startsWith('image/')) {
+                    const img = document.getElementById('previewImage');
+                    img.src = URL.createObjectURL(file);
+                    img.classList.remove('hidden');
+                    document.getElementById('previewVideo').classList.add('hidden');
+                    document.getElementById('previewAudio').classList.add('hidden');
+                } else if (file.type.startsWith('video/')) {
+                    const video = document.getElementById('previewVideo');
+                    video.src = URL.createObjectURL(file);
+                    video.classList.remove('hidden');
+                    document.getElementById('previewImage').classList.add('hidden');
+                    document.getElementById('previewAudio').classList.add('hidden');
+                } else if (file.type.startsWith('audio/')) {
+                    const audio = document.getElementById('previewAudio');
+                    audio.src = URL.createObjectURL(file);
+                    audio.classList.remove('hidden');
+                    document.getElementById('previewImage').classList.add('hidden');
+                    document.getElementById('previewVideo').classList.add('hidden');
+                } else {
+                    // 不支持预览的文件类型
+                    document.getElementById('previewImage').classList.add('hidden');
+                    document.getElementById('previewVideo').classList.add('hidden');
+                    document.getElementById('previewAudio').classList.add('hidden');
+                }
+            });
+            
+            // 创建NFT按钮点击事件
+            document.getElementById('createNFTBtn').addEventListener('click', async () => {
+                // 验证表单
+                const name = document.getElementById('name').value.trim();
+                const description = document.getElementById('description').value.trim();
+                const price = document.getElementById('price').value;
+                const royalty = document.getElementById('royalty').value;
+                const file = document.getElementById('fileUpload').files[0];
+                
+                if (!name) {
+                    alert('请输入藏品名称');
+                    return;
+                }
+                
+                if (!description) {
+                    alert('请输入藏品描述');
+                    return;
+                }
+                
+                if (!price || price <= 0) {
+                    alert('请输入有效的价格');
+                    return;
+                }
+                
+                if (!royalty || royalty < 0 || royalty > 100) {
+                    alert('版税比例必须在0-100之间');
+                    return;
+                }
+                
+                if (!file) {
+                    alert('请选择要上传的文件');
+                    return;
+                }
+                
+                // 显示加载状态
+                document.getElementById('txSpinner').classList.remove('hidden');
+                document.getElementById('txStatus').classList.remove('hidden');
+                document.getElementById('txPending').classList.remove('hidden');
+                document.getElementById('txSuccess').classList.add('hidden');
+                document.getElementById('txError').classList.add('hidden');
+                
+                try {
+                    // 1. 上传文件到IPFS
+                    const ipfsHash = await uploadToIPFS(file);
+                    
+                    // 2. 创建元数据JSON
+                    const metadata = {
+                        name: name,
+                        description: description,
+                        image: `ipfs://${ipfsHash}`,
+                        properties: {
+                            price: price,
+                            royalty: royalty,
+                            creator: currentAccount
+                        }
+                    };
+                    
+                    // 3. 上传元数据到IPFS
+                    const metadataHash = await uploadMetadataToIPFS(metadata);
+                    
+                    // 4. 调用智能合约创建NFT
+                    const tokenURI = `ipfs://${metadataHash}`;
+                    const priceInWei = web3.utils.toWei((price * 0.0001).toString(), 'ether'); // 简化示例，实际中应使用价格预言机转换CNY到ETH
+                    
+                    const tx = await contract.methods
+                        .createNFT(tokenURI, priceInWei, Math.round(royalty * 100)) // 版税以百分比的100倍存储
+                        .send({ from: currentAccount, gas: 500000 });
+                        
+                    // 5. 显示成功信息
+                    document.getElementById('txPending').classList.add('hidden');
+                    document.getElementById('txSuccess').classList.remove('hidden');
+                    document.getElementById('tokenId').textContent = tx.events.Transfer.returnValues.tokenId;
+                    
+                    // 6. 保存NFT信息到后端数据库
+                    saveNFTToDatabase({
+                        tokenId: tx.events.Transfer.returnValues.tokenId,
+                        owner: currentAccount,
+                        name: name,
+                        description: description,
+                        price: price,
+                        royalty: royalty,
+                        ipfsHash: ipfsHash,
+                        metadataHash: metadataHash,
+                        transactionHash: tx.transactionHash
+                    });
+                    
+                } catch (error) {
+                    console.error('创建NFT失败:', error);
+                    document.getElementById('txPending').classList.add('hidden');
+                    document.getElementById('txError').classList.remove('hidden');
+                    document.getElementById('errorMessage').textContent = '创建NFT失败: ' + error.message;
+                } finally {
+                    document.getElementById('txSpinner').classList.add('hidden');
+                }
+            });
+            
+            // 上传文件到IPFS (简化示例，实际应用中应使用真正的IPFS服务)
+            async function uploadToIPFS(file) {
+                // 实际应用中应使用Infura IPFS、Pinata或其他IPFS服务
+                console.log('上传文件到IPFS:', file.name);
+                
+                // 模拟上传过程
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        // 返回模拟的IPFS哈希
+                        const mockHash = 'Qm' + Math.random().toString(36).substring(2, 34);
+                        console.log('文件上传成功，IPFS哈希:', mockHash);
+                        resolve(mockHash);
+                    }, 2000);
+                });
+            }
+            
+            // 上传元数据到IPFS
+            async function uploadMetadataToIPFS(metadata) {
+                // 实际应用中应使用Infura IPFS、Pinata或其他IPFS服务
+                console.log('上传元数据到IPFS:', metadata);
+                
+                // 模拟上传过程
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        // 返回模拟的IPFS哈希
+                        const mockHash = 'Qm' + Math.random().toString(36).substring(2, 34);
+                        console.log('元数据上传成功，IPFS哈希:', mockHash);
+                        resolve(mockHash);
+                    }, 1000);
+                });
+            }
+            
+            // 保存NFT信息到后端数据库
+            async function saveNFTToDatabase(nftData) {
+                try {
+                    const response = await fetch('/api/nfts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(nftData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`保存NFT信息失败: ${response.statusText}`);
+                    }
+                    
+                    console.log('NFT信息已保存到数据库');
+                } catch (error) {
+                    console.error('保存NFT信息到数据库失败:', error);
+                    // 可以显示非关键错误，但不影响用户体验
+                }
+            }
+            
+            // 获取网络名称
+            function getNetworkName(networkId) {
+                const networks = {
+                    1: 'Ethereum Mainnet',
+                    3: 'Ropsten Testnet',
+                    4: 'Rinkeby Testnet',
+                    5: 'Goerli Testnet',
+                    42: 'Kovan Testnet',
+                    137: 'Polygon Mainnet',
+                    80001: 'Polygon Mumbai Testnet'
+                };
+                
+                return networks[networkId] || `未知网络 (${networkId})`;
+            }
+        });
+    
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.remove('shadow-sm');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.add('shadow-sm');
+            }
+        });
+
+        // 移动端菜单切换
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 钱包连接模态框
+        const walletConnectBtn = document.getElementById('walletConnectBtn');
+        const mobileWalletConnectBtn = document.getElementById('mobileWalletConnectBtn');
+        const walletModal = document.getElementById('walletModal');
+        const closeWalletModal = document.getElementById('closeWalletModal');
+        
+        walletConnectBtn.addEventListener('click', () => {
+            walletModal.classList.remove('hidden');
+        });
+        
+        mobileWalletConnectBtn.addEventListener('click', () => {
+            walletModal.classList.remove('hidden');
+            mobileMenu.classList.add('hidden');
+        });
+        
+        closeWalletModal.addEventListener('click', () => {
+            walletModal.classList.add('hidden');
+        });
+
+        // 点击模态框外部关闭
+        walletModal.addEventListener('click', (e) => {
+            if (e.target === walletModal) {
+                walletModal.classList.add('hidden');
+            }
+        });
+
+        // 图表初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 交易数据图表
+            const transactionCtx = document.getElementById('transactionChart').getContext('2d');
+            new Chart(transactionCtx, {
+                type: 'line',
+                data: {
+                    labels: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                    datasets: [{
+                        label: '交易总额 (万元)',
+                        data: [6500, 7800, 9200, 8500, 11000, 12500, 14200, 13800, 15600, 16800, 18200, 20500],
+                        borderColor: '#165DFF',
+                        backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 藏品类别分布图表
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['艺术', '摄影', '音乐', '视频', '3D模型', '其他'],
+                    datasets: [{
+                        data: [35, 20, 15, 12, 10, 8],
+                        backgroundColor: [
+                            '#165DFF',
+                            '#7B61FF',
+                            '#FF6B6B',
+                            '#FFC107',
+                            '#28C76F',
+                            '#888888'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        });
+
+        // 模拟区块链交互
+        function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                // 这里是与以太坊钱包交互的代码
+                console.log('以太坊钱包已安装');
+                // 实际应用中会调用 window.ethereum.request({ method: 'eth_requestAccounts' })
+            } else {
+                alert('请安装以太坊钱包如MetaMask来连接');
+            }
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动菜单
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+    
