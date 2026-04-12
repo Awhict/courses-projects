@@ -1,0 +1,144 @@
+int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  sub_401900();
+  printf(
+    "--------------FOR FUN------------------\n%s\n---------------------------------------\n\n",
+    (const char *)0x40004E);
+  sub_4015F3();
+  sub_401647();
+  return 0;
+}
+
+int sub_401900()
+{
+  int i; // ebx
+  int result; // eax
+
+  result = dword_4060E0;
+  if ( !dword_4060E0 )
+  {
+    dword_4060E0 = 1;
+    for ( i = 0; dword_402960[i + 1]; ++i )
+      ;
+    for ( ; i; --i )
+      ((void (*)(void))dword_402960[i])();
+    return sub_4014C0(sub_401870);
+  }
+  return result;
+}
+
+int __cdecl sub_4014C0(_onexit_t Func)
+{
+  return -(onexit(Func) == 0);
+}
+
+void (*__cdecl sub_401870())(void)
+{
+  void (*result)(void); // eax
+
+  result = (void (*)(void))(*off_403080)[0];
+  if ( (*off_403080)[0] )
+  {
+    do
+    {
+      result();
+      result = (void (*)(void))(*off_403080)[1];
+      off_403080 = (int (*)[36])((char *)off_403080 + 4);
+    }
+    while ( result );
+  }
+  return result;
+}
+
+int sub_4015F3()
+{
+  size_t v0; // edx
+  int result; // eax
+
+  puts("Please input your flag below:");
+  scanf("%12s", Str);
+  v0 = strlen(Str);
+  result = (unsigned __int8)byte_403020;
+  if ( v0 != (unsigned __int8)byte_403020 )
+  {
+    sub_4017A0();
+    exit(100876);
+  }
+  return result;
+}
+
+char sub_4017A0()
+{
+  int i; // [esp+Ch] [ebp-4h]
+
+  for ( i = 0; i < (unsigned __int8)byte_403020; ++i )
+    a04footfracd9[i] = 0;
+  return 1;
+}
+
+int sub_401647()
+{
+  int v1; // [esp+18h] [ebp-10h]
+  int i; // [esp+1Ch] [ebp-Ch]
+
+  for ( i = 0; i < (unsigned __int8)byte_403020 && (unsigned __int8)sub_401764(); ++i )
+  {
+    dword_406060[i] = sub_4017CE((unsigned __int8)Str[i], a1234567890Abcd);
+    Str[i] = a1234567890Abcd[((unsigned __int8)byte_403066 * dword_406060[i] + (unsigned int)(unsigned __int8)byte_403067)
+                           % strlen(a1234567890Abcd)];
+  }
+  v1 = sub_40182B();
+  sub_4017A0();
+  if ( v1 )
+    return MessageBoxA(0, "   Good Job !\n\n :_)", "Validate your flag...", 0);
+  else
+    return MessageBoxA(0, "   Sorry, please try it again!\n\n :_(", "Pay attention to keys...", 0);
+}
+
+char sub_401764()
+{
+  byte_403066 ^= byte_403067;
+  byte_403067 ^= byte_403066;
+  if ( byte_403066 == 18 )
+    sub_401764();
+  return 1;
+}
+
+char __cdecl sub_4017CE(char a1, char *Str)
+{
+  char result; // al
+  size_t i; // [esp+2Ch] [ebp-Ch]
+
+  for ( i = 0; strlen(Str) > i; ++i )
+  {
+    if ( a1 == Str[i] )
+      return i;
+  }
+  result = Str[i];
+  if ( a1 != result )
+    exit(100876);
+  return result;
+}
+
+int sub_40182B()
+{
+  int i; // [esp+Ch] [ebp-4h]
+
+  for ( i = 0; i < (unsigned __int8)byte_403020; ++i )
+  {
+    if ( Str[i] != a04footfracd9[i] )
+      return 0;
+  }
+  return 1;
+}
+
+char sub_4017A0()
+{
+  int i; // [esp+Ch] [ebp-4h]
+
+  for ( i = 0; i < (unsigned __int8)byte_403020; ++i )
+    a04footfracd9[i] = 0;
+  return 1;
+}
+
+请分析以上代码的功能。

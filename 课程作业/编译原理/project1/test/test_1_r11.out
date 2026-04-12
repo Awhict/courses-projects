@@ -1,0 +1,4 @@
+Error type A at line 3: illegal hexadecimal integer '0x77G'
+Error type A at line 4: illegal hexadecimal integer '0xCS'
+Error type A at line 7: illegal hex_character ''\x6u''
+Error type A at line 8: illegal hex_character ''\x910''

@@ -1,0 +1,18 @@
+这可能是加密后的结果：04FOOTFRACD9
+a04footfracd9 db '04FOOTFRACD9',0
+
+输入的flag长度为：12
+byte_403020 db 0Ch
+
+仿射变换表：1234567890_ABCDEFGHIJKLMNOPQRSTUVWXYZ（长为37）
+a1234567890Abcd db '1234567890_ABCDEFGHIJKLMNOPQRSTUVWXYZ',0
+
+仿射变换：y=(18x+17)%37  -> x=((y-17)*35)%37（掩人耳目）
+仿射函数为：y=(3x+18)%37 和 y=(17x+3)%37，它们轮流对字符进行仿射变换。
+逆变换为：y=((x-18)*25)%37 和 y=((x-3)*24)%37
+Str[i] = a1234567890Abcd[((unsigned __int8)byte_403066 * dword_406060[i] + (unsigned int)(unsigned __int8)byte_403067)% strlen(a1234567890Abcd)]
+byte_403066 db 12h
+byte_403067 db 11h
+
+这可能是加密前的输入：X1N_QIN9_HA0
+
