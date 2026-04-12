@@ -1,0 +1,7 @@
+python main.py train --nogpu --vis=False
+python main.py generate --nogpu --vis=False --netd-path=checkpoints/netd_200.pth --netg-path=checkpoints/netg_200.pth --gen-img=result.png --gen-num=64
+
+python demo.py -f examples/real.png -m weights/blur_jpg_prob0.5.pth --use_cpu
+python demo.py -f examples/fake.png -m weights/blur_jpg_prob0.5.pth --use_cpu
+python demo_dir.py -d examples/realfakedir -m weights/blur_jpg_prob0.5.pth --use_cpu
+python demo_dir.py -d examples/realfakedir/airplane -m weights/blur_jpg_prob0.5.pth --use_cpu
