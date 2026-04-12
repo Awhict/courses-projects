@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实验结果</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36CFC9',
+            success: '#52C41A',
+            danger: '#FF4D4F',
+            dark: '#1D2129',
+            light: '#F2F3F5'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+  <!-- 导航栏 -->
+  <nav class="fixed w-full z-50 bg-white shadow-sm">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <a href="index.html" class="flex-shrink-0 flex items-center">
+            <i class="fa fa-shield text-primary text-2xl mr-2"></i>
+            <span class="text-xl font-bold text-primary">基于Transformer的加密流量检测系统</span>
+          </a>
+          <div class="hidden md:ml-10 md:flex md:space-x-8">
+            <a href="index.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">首页</a>
+            <a href="model.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">模型架构</a>
+            <a href="detection.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">流量检测</a>
+            <a href="visualization.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">数据可视化</a>
+            <a href="results.html" class="text-primary px-3 py-2 text-sm font-medium border-b-2 border-primary">实验结果</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 页面头部 -->
+  <div class="pt-24 pb-12 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">实验结果</h1>
+        <p class="text-lg text-gray-600">ET-BERT模型在下游任务上的性能评估与对比分析</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 实验结果内容 -->
+  <div class="py-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto">
+        
+        <!-- 单任务性能指标 -->
+        <div class="bg-white rounded-xl shadow-sm p-8 mb-8">
+          <h2 class="text-2xl font-bold mb-8 text-center">ET-BERT单任务性能评估</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-gray-50 rounded-xl p-6 border shadow-sm">
+              <h3 class="font-semibold text-lg mb-4 text-center text-gray-800">恶意流量检测</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">准确率</p>
+                  <p class="text-2xl font-bold text-primary">97.2%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">精确率</p>
+                  <p class="text-2xl font-bold text-secondary">96.9%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">召回率</p>
+                  <p class="text-2xl font-bold text-purple-600">97.5%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">F1分数</p>
+                  <p class="text-2xl font-bold text-success">97.2%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-6 border shadow-sm">
+              <h3 class="font-semibold text-lg mb-4 text-center text-gray-800">异常行为分析</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">准确率</p>
+                  <p class="text-2xl font-bold text-primary">95.3%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">精确率</p>
+                  <p class="text-2xl font-bold text-secondary">94.8%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">召回率</p>
+                  <p class="text-2xl font-bold text-purple-600">95.1%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">F1分数</p>
+                  <p class="text-2xl font-bold text-success">94.9%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-6 border shadow-sm">
+              <h3 class="font-semibold text-lg mb-4 text-center text-gray-800">应用类型分类</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">准确率</p>
+                  <p class="text-2xl font-bold text-primary">96.7%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">精确率</p>
+                  <p class="text-2xl font-bold text-secondary">96.3%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">召回率</p>
+                  <p class="text-2xl font-bold text-purple-600">96.5%</p>
+                </div>
+                <div class="text-center bg-white p-3 rounded-lg shadow-xs">
+                  <p class="text-sm text-gray-600 mb-1">F1分数</p>
+                  <p class="text-2xl font-bold text-success">96.4%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 详细性能表格 -->
+        <div class="bg-white rounded-xl shadow-sm p-8 mb-12">
+          <h3 class="text-xl font-semibold mb-6 flex items-center justify-center">
+            <i class="fa fa-table text-primary mr-2"></i> 详细性能评估表
+          </h3>
+          <div class="overflow-x-auto rounded-lg border">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr class="bg-gray-50">
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">任务类型</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">准确率</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">精确率</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">召回率</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">F1分数</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">恶意流量检测</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-primary">97.2%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-secondary">96.9%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-purple-600">97.5%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-success">97.2%</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">异常行为分析</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-primary">95.3%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-secondary">94.8%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-purple-600">95.1%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-success">94.9%</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">应用类型分类</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-primary">96.7%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-secondary">96.3%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-purple-600">96.5%</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-bold text-success">96.4%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- 鲁棒性与泛化性测试 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+          <div class="bg-white rounded-xl shadow-sm p-8">
+            <h3 class="text-xl font-semibold mb-6 flex items-center">
+              <i class="fa fa-shield text-primary mr-3"></i> 鲁棒性测试结果
+            </h3>
+            <div class="h-72 mb-6">
+              <canvas id="robustnessChart"></canvas>
+            </div>
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+              <p class="text-sm text-blue-800 font-medium">测试条件：添加不同强度的流量噪声</p>
+              <p class="text-sm text-gray-600 mt-1">结论：模型对轻微流量噪声具有较强的鲁棒性，适用于实际复杂网络环境</p>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-sm p-8">
+            <h3 class="text-xl font-semibold mb-6 flex items-center">
+              <i class="fa fa-exchange text-primary mr-3"></i> 泛化性测试结果
+            </h3>
+            <div class="h-72 mb-6">
+              <canvas id="generalizationChart"></canvas>
+            </div>
+            <div class="mt-6 p-4 bg-green-50 rounded-lg border border-green-100">
+              <p class="text-sm text-green-800 font-medium">测试条件：跨场景流量识别（未进行微调 vs 进行微调）</p>
+              <p class="text-sm text-gray-600 mt-1">结论：模型通过微调训练获得了更强的跨场景泛化能力，F1分数提升3.9个百分点</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 错误案例分析 -->
+        <div class="bg-white rounded-xl shadow-sm p-8 mb-8">
+          <h3 class="text-xl font-semibold mb-8 flex items-center justify-center">
+            <i class="fa fa-exclamation-triangle text-primary mr-3"></i> 错误案例分析
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-6 bg-red-50 border border-red-200 rounded-xl hover:shadow-md transition-shadow">
+              <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                  <i class="fa fa-bug text-red-600"></i>
+                </div>
+                <h4 class="font-semibold text-red-700 text-lg">恶意流量检测任务</h4>
+              </div>
+              <p class="text-sm text-gray-700">错误主要集中在新型恶意软件通信流量上，特征与正常应用流量高度相似，且训练数据中样本数量较少。</p>
+            </div>
+            <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-xl hover:shadow-md transition-shadow">
+              <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                  <i class="fa fa-server text-yellow-600"></i>
+                </div>
+                <h4 class="font-semibold text-yellow-700 text-lg">异常行为分析任务</h4>
+              </div>
+              <p class="text-sm text-gray-700">模型主要难以准确区分低速率DDoS攻击与正常流量，统计特征与正常流量差异较小。</p>
+            </div>
+            <div class="p-6 bg-blue-50 border border-blue-200 rounded-xl hover:shadow-md transition-shadow">
+              <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                  <i class="fa fa-globe text-blue-600"></i>
+                </div>
+                <h4 class="font-semibold text-blue-700 text-lg">应用类型分类任务</h4>
+              </div>
+              <p class="text-sm text-gray-700">错误主要出现在功能相似的不同应用之间（例如不同浏览器的HTTPS流量），模型对细微行为差异的感知能力有待加强。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center text-gray-500 text-sm">
+        <p>&copy; 2025 北京邮电大学 网络空间安全学院 信息安全工程实践课程项目 保留所有权利</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 注册数据标签插件
+    Chart.register(ChartDataLabels);
+    
+    // 初始化图表
+    document.addEventListener('DOMContentLoaded', function() {
+      // 鲁棒性测试图表
+      const robustnessCtx = document.getElementById('robustnessChart').getContext('2d');
+      new Chart(robustnessCtx, {
+        type: 'line',
+        data: {
+          labels: ['未添加噪声', '添加1%噪声', '添加3%噪声', '添加5%噪声'],
+          datasets: [{
+            label: '平均F1分数',
+            data: [96.2, 95.9, 94.9, 93.6],
+            borderColor: '#165DFF',
+            backgroundColor: 'rgba(22, 93, 255, 0.1)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#165DFF',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: {
+                font: {
+                  size: 14,
+                  family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+                },
+                padding: 20
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              titleFont: { size: 14 },
+              bodyFont: { size: 14 },
+              padding: 12,
+              callbacks: {
+                label: function(context) {
+                  return `F1分数: ${context.parsed.y}%`;
+                }
+              }
+            },
+            datalabels: {
+              anchor: 'end',
+              align: 'top',
+              color: '#165DFF',
+              font: {
+                size: 14,
+                weight: 'bold'
+              },
+              formatter: function(value) {
+                return value + '%';
+              },
+              padding: 6
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 92,
+              max: 97,
+              title: { 
+                display: true, 
+                text: 'F1分数 (%)',
+                font: {
+                  size: 14,
+                  weight: 'bold'
+                },
+                padding: {top: 10, bottom: 10}
+              },
+              ticks: { 
+                font: { size: 12 },
+                callback: function(value) { return value + '%'; },
+                stepSize: 1
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            },
+            x: { 
+              title: { 
+                display: true, 
+                text: '噪声强度',
+                font: {
+                  size: 14,
+                  weight: 'bold'
+                },
+                padding: {top: 10, bottom: 10}
+              },
+              ticks: { 
+                font: { size: 12 }
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            }
+          }
+        }
+      });
+
+      // 泛化性测试图表
+      const generalizationCtx = document.getElementById('generalizationChart').getContext('2d');
+      new Chart(generalizationCtx, {
+        type: 'bar',
+        data: {
+          labels: ['进行微调', '未进行微调'],
+          datasets: [{
+            label: '平均F1分数',
+            data: [96.2, 92.3],
+            backgroundColor: ['#36CFC9', '#FF4D4F'],
+            borderColor: ['#2BA8A3', '#E64445'],
+            borderWidth: 2,
+            borderRadius: 6,
+            hoverBackgroundColor: ['#2BA8A3', '#E64445']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: {
+                font: {
+                  size: 14,
+                  family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+                },
+                padding: 20
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              titleFont: { size: 14 },
+              bodyFont: { size: 14 },
+              padding: 12,
+              callbacks: {
+                label: function(context) {
+                  return `F1分数: ${context.parsed.y}%`;
+                }
+              }
+            },
+            datalabels: {
+              anchor: 'end',
+              align: 'end',
+              color: '#1D2129',
+              font: {
+                size: 16,
+                weight: 'bold'
+              },
+              formatter: function(value) {
+                return value + '%';
+              },
+              padding: {
+                top: -20
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 90,
+              max: 97,
+              title: { 
+                display: true, 
+                text: 'F1分数 (%)',
+                font: {
+                  size: 14,
+                  weight: 'bold'
+                },
+                padding: {top: 10, bottom: 10}
+              },
+              ticks: { 
+                font: { size: 12 },
+                callback: function(value) { return value + '%'; },
+                stepSize: 2
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            },
+            x: {
+              ticks: { 
+                font: { size: 12, weight: 'bold' }
+              },
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据可视化</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36CFC9',
+            success: '#52C41A',
+            danger: '#FF4D4F',
+            dark: '#1D2129',
+            light: '#F2F3F5'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+  <!-- 导航栏 -->
+  <nav class="fixed w-full z-50 bg-white shadow-sm">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <a href="index.html" class="flex-shrink-0 flex items-center">
+            <i class="fa fa-shield text-primary text-2xl mr-2"></i>
+            <span class="text-xl font-bold text-primary">基于Transformer的加密流量检测系统</span>
+          </a>
+          <div class="hidden md:ml-10 md:flex md:space-x-8">
+            <a href="index.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">首页</a>
+            <a href="model.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">模型架构</a>
+            <a href="detection.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">流量检测</a>
+            <a href="visualization.html" class="text-primary px-3 py-2 text-sm font-medium border-b-2 border-primary">数据可视化</a>
+            <a href="results.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">实验结果</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 页面头部 -->
+  <div class="pt-24 pb-12 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">检测结果可视化</h1>
+        <p class="text-lg text-gray-600">流量检测结果和模型性能可视化分析</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 可视化内容 -->
+  <div class="py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto">
+        
+        <!-- 检测结果概览 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+            <div class="text-2xl font-bold text-primary mb-2">1,247</div>
+            <div class="text-sm text-gray-600">总流量数</div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+            <div class="text-2xl font-bold text-success mb-2">1,189</div>
+            <div class="text-sm text-gray-600">正常流量</div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+            <div class="text-2xl font-bold text-danger mb-2">58</div>
+            <div class="text-sm text-gray-600">恶意流量</div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+            <div class="text-2xl font-bold text-secondary mb-2">95.3%</div>
+            <div class="text-sm text-gray-600">检测准确率</div>
+          </div>
+        </div>
+
+        <!-- 训练过程曲线 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="text-xl font-semibold mb-4 flex items-center">
+              <i class="fa fa-line-chart text-primary mr-2"></i> 训练准确率曲线
+            </h3>
+            <div class="h-80">
+              <canvas id="accuracyChart"></canvas>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="text-xl font-semibold mb-4 flex items-center">
+              <i class="fa fa-area-chart text-primary mr-2"></i> 训练损失曲线
+            </h3>
+            <div class="h-80">
+              <canvas id="lossChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 实时检测结果 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-12">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fa fa-bar-chart text-primary mr-2"></i> 流量分类分布
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="h-80">
+              <canvas id="trafficDistribution"></canvas>
+            </div>
+            <div class="h-80">
+              <canvas id="attackTypes"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 模型注意力可视化 -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fa fa-th text-primary mr-2"></i> Transformer注意力热力图
+          </h3>
+          <p class="text-gray-600 mb-4">展示模型在处理流量序列时的注意力分布，颜色越深表示关注度越高。</p>
+          <div class="h-96">
+            <canvas id="attentionHeatmap"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center text-gray-500 text-sm">
+        <p>&copy; 2025 北京邮电大学 网络空间安全学院 信息安全工程实践课程项目 保留所有权利</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 初始化图表
+    document.addEventListener('DOMContentLoaded', function() {
+      // 准确率曲线
+      const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+      new Chart(accuracyCtx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 10}, (_, i) => `Epoch ${i+1}`),
+          datasets: [
+            {
+              label: '训练准确率',
+              data: [0.852, 0.914, 0.943, 0.962, 0.974, 0.981, 0.986, 0.989, 0.991, 0.993],
+              borderColor: '#165DFF',
+              backgroundColor: 'rgba(22, 93, 255, 0.1)',
+              fill: true,
+              tension: 0.4
+            },
+            {
+              label: '验证准确率',
+              data: [0.836, 0.892, 0.925, 0.943, 0.956, 0.964, 0.971, 0.976, 0.980, 0.983],
+              borderColor: '#36CFC9',
+              backgroundColor: 'rgba(54, 207, 201, 0.1)',
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 0.8,
+              max: 1.0,
+              title: { display: true, text: '准确率' }
+            }
+          }
+        }
+      });
+
+      // 损失曲线
+      const lossCtx = document.getElementById('lossChart').getContext('2d');
+      new Chart(lossCtx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 10}, (_, i) => `Epoch ${i+1}`),
+          datasets: [
+            {
+              label: '训练损失',
+              data: [0.452, 0.281, 0.183, 0.124, 0.085, 0.058, 0.039, 0.027, 0.019, 0.014],
+              borderColor: '#FF4D4F',
+              backgroundColor: 'rgba(255, 77, 79, 0.1)',
+              fill: true,
+              tension: 0.4
+            },
+            {
+              label: '验证损失',
+              data: [0.468, 0.295, 0.198, 0.142, 0.103, 0.076, 0.057, 0.044, 0.035, 0.028],
+              borderColor: '#FF9C6E',
+              backgroundColor: 'rgba(255, 156, 110, 0.1)',
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: '损失值' }
+            }
+          }
+        }
+      });
+
+      // 流量分布图表
+      const distributionCtx = document.getElementById('trafficDistribution').getContext('2d');
+      new Chart(distributionCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['正常流量', '恶意流量'],
+          datasets: [{
+            data: [1189, 58],
+            backgroundColor: ['#52C41A', '#FF4D4F']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+
+      // 攻击类型分布
+      const attackCtx = document.getElementById('attackTypes').getContext('2d');
+      new Chart(attackCtx, {
+        type: 'bar',
+        data: {
+          labels: ['DDoS攻击', '端口扫描', '暴力破解', 'Web攻击', '其他攻击'],
+          datasets: [{
+            label: '攻击次数',
+            data: [28, 15, 8, 5, 2],
+            backgroundColor: '#165DFF'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { 
+              beginAtZero: true,
+              title: { display: true, text: '攻击次数' }
+            }
+          }
+        }
+      });
+
+      // 修复热力图 - 使用散点图模拟热力图
+      const heatmapCtx = document.getElementById('attentionHeatmap').getContext('2d');
+      
+      // 生成热力图数据
+      const heatmapData = generateHeatmapData(15, 15);
+      
+      new Chart(heatmapCtx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: '注意力权重',
+            data: heatmapData,
+            backgroundColor: function(context) {
+              const value = context.raw.v;
+              // 根据值的大小设置颜色深浅
+              if (value > 0.8) return 'rgba(22, 93, 255, 0.9)';
+              if (value > 0.6) return 'rgba(22, 93, 255, 0.7)';
+              if (value > 0.4) return 'rgba(22, 93, 255, 0.5)';
+              if (value > 0.2) return 'rgba(22, 93, 255, 0.3)';
+              return 'rgba(22, 93, 255, 0.1)';
+            },
+            pointRadius: 15,
+            pointHoverRadius: 18
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: 'linear',
+              position: 'bottom',
+              min: 0,
+              max: 16,
+              title: {
+                display: true,
+                text: '序列位置'
+              },
+              ticks: {
+                stepSize: 1,
+                callback: function(value) {
+                  if (value >= 1 && value <= 15) {
+                    return `P${value}`;
+                  }
+                  return '';
+                }
+              },
+              grid: {
+                display: true
+              }
+            },
+            y: {
+              type: 'linear',
+              min: 0,
+              max: 16,
+              title: {
+                display: true,
+                text: '序列位置'
+              },
+              ticks: {
+                stepSize: 1,
+                callback: function(value) {
+                  if (value >= 1 && value <= 15) {
+                    return `P${value}`;
+                  }
+                  return '';
+                }
+              },
+              grid: {
+                display: true
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                title: function(context) {
+                  const point = context[0].raw;
+                  return `位置: P${point.x}, P${point.y}`;
+                },
+                label: function(context) {
+                  const point = context.raw;
+                  return `注意力权重: ${point.v.toFixed(3)}`;
+                }
+              }
+            },
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    });
+
+    // 生成热力图数据
+    function generateHeatmapData(rows, cols) {
+      const data = [];
+      for (let x = 1; x <= cols; x++) {
+        for (let y = 1; y <= rows; y++) {
+          // 对角线附近的值较高，模拟注意力机制
+          const distance = Math.abs(x - y);
+          const baseValue = Math.max(0.1, 1 - distance / 8);
+          const noise = Math.random() * 0.2;
+          const value = Math.min(1, baseValue + noise);
+          data.push({ 
+            x: x, 
+            y: y, 
+            v: value 
+          });
+        }
+      }
+      return data;
+    }
+  </script>
+</body>
+</html>

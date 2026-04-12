@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模型架构</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36CFC9',
+            success: '#52C41A',
+            danger: '#FF4D4F',
+            dark: '#1D2129',
+            light: '#F2F3F5'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+  <!-- 导航栏 -->
+  <nav class="fixed w-full z-50 bg-white shadow-sm">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <a href="index.html" class="flex-shrink-0 flex items-center">
+            <i class="fa fa-shield text-primary text-2xl mr-2"></i>
+            <span class="text-xl font-bold text-primary">基于Transformer的加密流量检测系统</span>
+          </a>
+          <div class="hidden md:ml-10 md:flex md:space-x-8">
+            <a href="index.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">首页</a>
+            <a href="model.html" class="text-primary px-3 py-2 text-sm font-medium border-b-2 border-primary">模型架构</a>
+            <a href="detection.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">流量检测</a>
+            <a href="visualization.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">数据可视化</a>
+            <a href="results.html" class="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">实验结果</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 页面头部 -->
+  <div class="pt-24 pb-12 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">模型架构</h1>
+        <p class="text-lg text-gray-600">基于ET-BERT的加密流量检测模型设计</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模型架构内容 -->
+  <div class="py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto">
+        <!-- 架构概览 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h2 class="text-2xl font-bold mb-6">架构概览</h2>
+          <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <div class="space-y-4">
+              <div class="flex items-center p-4 bg-white rounded-lg border">
+                <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                  <span class="text-primary font-bold">1</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold">输入层</h3>
+                  <p class="text-gray-600 text-sm">双字节编码后的Token序列 (最大长度: 512)</p>
+                </div>
+              </div>
+              
+              <div class="flex items-center p-4 bg-white rounded-lg border">
+                <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                  <span class="text-primary font-bold">2</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold">Token嵌入 + 位置编码 + 段嵌入</h3>
+                  <p class="text-gray-600 text-sm">将输入序列转换为向量表示 (嵌入维度: 768)</p>
+                </div>
+              </div>
+              
+              <div class="flex items-center p-4 bg-white rounded-lg border">
+                <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                  <span class="text-primary font-bold">3</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold">Transformer编码器</h3>
+                  <p class="text-gray-600 text-sm">6个编码器层，每个包含12头注意力机制和前馈网络</p>
+                </div>
+              </div>
+              
+              <div class="flex items-center p-4 bg-white rounded-lg border">
+                <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                  <span class="text-primary font-bold">4</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold">分类器</h3>
+                  <p class="text-gray-600 text-sm">全连接网络，输出各类别概率分布</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 技术细节 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="text-xl font-semibold mb-4 flex items-center">
+              <i class="fa fa-cogs text-primary mr-2"></i> 模型参数
+            </h3>
+            <div class="space-y-3">
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">词汇表大小</span>
+                <span class="font-semibold">65541 (65536+5特殊token)</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">嵌入维度</span>
+                <span class="font-semibold">768</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">注意力头数</span>
+                <span class="font-semibold">12</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">编码器层数</span>
+                <span class="font-semibold">6</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">前馈网络维度</span>
+                <span class="font-semibold">3072</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">最大序列长度</span>
+                <span class="font-semibold">512</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="text-xl font-semibold mb-4 flex items-center">
+              <i class="fa fa-wrench text-primary mr-2"></i> 训练配置
+            </h3>
+            <div class="space-y-3">
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">学习率</span>
+                <span class="font-semibold">1e-4 (线性衰减)</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">批次大小</span>
+                <span class="font-semibold">32</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">训练轮数</span>
+                <span class="font-semibold">10 (早停机制)</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">Dropout比率</span>
+                <span class="font-semibold">0.1</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">优化器</span>
+                <span class="font-semibold">AdamW</span>
+              </div>
+              <div class="flex justify-between border-b pb-2">
+                <span class="text-gray-600">权重衰减</span>
+                <span class="font-semibold">0.01</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 预训练任务 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mt-8">
+          <h2 class="text-2xl font-bold mb-6">预训练任务</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 rounded-lg p-4 border">
+              <h3 class="font-semibold text-lg mb-2 flex items-center">
+                <i class="fa fa-mask text-primary mr-2"></i> 掩码突发模型 (MBM)
+              </h3>
+              <p class="text-gray-600 text-sm">随机掩盖输入序列中15%的token，模型预测被掩盖的原始字节。学习字节间的局部依赖关系和上下文双向表征。</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4 border">
+              <h3 class="font-semibold text-lg mb-2 flex items-center">
+                <i class="fa fa-link text-primary mr-2"></i> 同源突发预测 (SBP)
+              </h3>
+              <p class="text-gray-600 text-sm">判断两个子段是否源自同一个原始BURST。学习流量传输中的结构性逻辑和序列关系。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center text-gray-500 text-sm">
+        <p>&copy; 2025 北京邮电大学 网络空间安全学院 信息安全工程实践课程项目 保留所有权利</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
